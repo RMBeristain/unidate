@@ -1,7 +1,7 @@
 Unified Calendar
 ================
 
-Module to convert Grgorian calendar dates to Unified calendar dates as featured in the science-fiction novel
+Module to convert Gregorian calendar dates to Unified calendar dates as featured in the science-fiction novel
 
  A P A R T
  O F T H E
@@ -27,7 +27,7 @@ loss).
 
 
 The Unified Calendar explained
-------------------------------
+==============================
 
 In the Unified State people have adopted a new calendar that completely does away with the division used by the
 Western Gregorian calendar.
@@ -144,8 +144,8 @@ and week day every year, unlike in the Gregorian calendar where one may have bee
 date moves around the week. In the Unified State, if we were born on a Fourthday, our birthday will always fall on a
 Fourthday.
 
-Running
--------
+Usage
+=====
 
 To run on python interpreter:
 ```python
