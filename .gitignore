@@ -1,0 +1,12 @@
+# Python cache
+__pycache__*
+.cache
+.pytest_cache
+__cache__*
+
+# Sublime
+*sublime-*
+
+# Coverage
+.coverage
+html_coverage
