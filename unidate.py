@@ -258,8 +258,6 @@ class UnifiedDate:
             ========
             - Unified date in specified format.
         """
-        style = style.strip().title()
-
         if variant == "Unified":
             date = self.unified_date
         elif variant == "SWT":
@@ -268,6 +266,8 @@ class UnifiedDate:
             date = self.austral_date
         else:
             raise ValueError(f"Unknown variant: {variant}")
+
+        style = style.strip().title()
 
         else:
             if style == "Iso":  # ISO 8601U "Unified ISO format"
