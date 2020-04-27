@@ -267,7 +267,7 @@ class UnifiedDate:
         elif variant == "Austral":
             date = self.austral_date
         else:
-            return "Unknown variant"
+            raise ValueError(f"Unknown variant: {variant}")
 
         if date is None:
             return "No date specified"
