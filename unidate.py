@@ -337,6 +337,9 @@ class UnifiedDate:
                 - 'Long': Long Day Name (e.g. Seconday)
                 - 'Short': Short Day Name (e.g. D2)
         """
+        month_day = ((weekday.yearday % 90) % 18) or 18
+        if month_day < 1 or month_day > 18:
+            raise UnvalidUnifiedDateValue(f"Invalid week tuple: {weekday!r}")
         if weekday.regular == 0:
             return UniDayTuple(self.festive_short[weekday.number], 0)
         else:
