@@ -226,11 +226,11 @@ class UnifiedDate:
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __call__(self, value: str = None) -> None:  # pragma: no cover
-        "Allows class to be callable"
-        if value is None:
-            value = datetime.strftime(datetime.now(), "%Y-%m-%d")
-        self.__init__(value)  # type: ignore
+    @classmethod
+    def today(cls, style="Long"):
+        "Create a UnifiedDate instance from today's date"
+        return cls(datetime.now().date().isoformat(), style)
+
 
     def format_date(self, variant: str = "Unified", style: str = "Long") -> str:
         """
