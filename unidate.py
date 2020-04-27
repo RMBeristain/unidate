@@ -270,12 +270,8 @@ class UnifiedDate:
         style = style.strip().title()
 
         if style == "Iso":  # ISO 8601U "Unified ISO format"
-            return "{year}-{quarter}{month}-{day:02}".format(
-                year=date.year,
-                quarter=date.month.numeric.quarter,
-                month=date.month.numeric.month,
-                day=date.day.number,
-            )
+            _ = date.month.numeric
+            return f"{date.year}-{_.quarter}{_.month}-{date.day.number:02}"
         else:
             if date.weekday.regular:
                 date = UnifiedDateType(  # replace existing date tuple with requested format
