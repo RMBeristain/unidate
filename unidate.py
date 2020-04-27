@@ -78,6 +78,121 @@ class UnifiedDate:
             - year: unified year
     """
 
+    festive = [1, 92, 183, 274, 365, 366]
+    festive_short = ["Q1", "Q2", "Q3", "Q4", "YE", "LD"]
+
+    # Short-format unified month names. There are no short-format variants for Territorian or Austral.
+    _unified_month_name_short = {
+        "Q1": UniMonthTuple("Q10", UQT(1, 0)),
+        1: UniMonthTuple("Q1A", UQT(1, 1)),
+        2: UniMonthTuple("Q1B", UQT(1, 2)),
+        3: UniMonthTuple("Q1C", UQT(1, 3)),
+        4: UniMonthTuple("Q1D", UQT(1, 4)),
+        5: UniMonthTuple("Q1E", UQT(1, 5)),
+        "Q2": UniMonthTuple("Q20", UQT(2, 0)),
+        6: UniMonthTuple("Q2A", UQT(2, 1)),
+        7: UniMonthTuple("Q2B", UQT(2, 2)),
+        8: UniMonthTuple("Q2C", UQT(2, 3)),
+        9: UniMonthTuple("Q2D", UQT(2, 4)),
+        10: UniMonthTuple("Q2E", UQT(2, 5)),
+        "Q3": UniMonthTuple("Q30", UQT(3, 0)),
+        11: UniMonthTuple("Q3A", UQT(3, 1)),
+        12: UniMonthTuple("Q3B", UQT(3, 2)),
+        13: UniMonthTuple("Q3C", UQT(3, 3)),
+        14: UniMonthTuple("Q3D", UQT(3, 4)),
+        15: UniMonthTuple("Q three E", UQT(3, 5)),
+        "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
+        16: UniMonthTuple("Q4A", UQT(4, 1)),
+        17: UniMonthTuple("Q4B", UQT(4, 2)),
+        18: UniMonthTuple("Q4C", UQT(4, 3)),
+        19: UniMonthTuple("Q4D", UQT(4, 4)),
+        20: UniMonthTuple("Q4E", UQT(4, 5)),
+        "YE": UniMonthTuple("YE", UQT(5, 0)),
+        "LD": UniMonthTuple("LD", UQT(6, 0)),
+    }
+
+    _unified_month_name_long = {
+        "Q1": UniMonthTuple("Quarter one", UQT(1, 0)),
+        1: UniMonthTuple("Quarter one-A", UQT(1, 1)),
+        2: UniMonthTuple("Quarter one-B", UQT(1, 2)),
+        3: UniMonthTuple("Quarter one-C", UQT(1, 3)),
+        4: UniMonthTuple("Quarter one-D", UQT(1, 4)),
+        5: UniMonthTuple("Quarter one-E", UQT(1, 5)),
+        "Q2": UniMonthTuple("Quarter two", UQT(2, 0)),
+        6: UniMonthTuple("Quarter two-A", UQT(2, 1)),
+        7: UniMonthTuple("Quarter two-B", UQT(2, 2)),
+        8: UniMonthTuple("Quarter two-C", UQT(2, 3)),
+        9: UniMonthTuple("Quarter two-D", UQT(2, 4)),
+        10: UniMonthTuple("Quarter two-E", UQT(2, 5)),
+        "Q3": UniMonthTuple("Quarter three", UQT(3, 0)),
+        11: UniMonthTuple("Quarter three-A", UQT(3, 1)),
+        12: UniMonthTuple("Quarter three-B", UQT(3, 2)),
+        13: UniMonthTuple("Quarter three-C", UQT(3, 3)),
+        14: UniMonthTuple("Quarter three-D", UQT(3, 4)),
+        15: UniMonthTuple("Quarter three-E", UQT(3, 5)),
+        "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
+        16: UniMonthTuple("Quarter four-A", UQT(4, 1)),
+        17: UniMonthTuple("Quarter four-B", UQT(4, 2)),
+        18: UniMonthTuple("Quarter four-C", UQT(4, 3)),
+        19: UniMonthTuple("Quarter four-D", UQT(4, 4)),
+        20: UniMonthTuple("Quarter four-E", UQT(4, 5)),
+        "YE": UniMonthTuple("Year end", UQT(5, 0)),
+        "LD": UniMonthTuple("Leap day", UQT(6, 0)),
+    }
+
+    _territorian = {
+        1: UniMonthTuple("Winter freeze", UQT(1, 1)),
+        2: UniMonthTuple("Winter wane", UQT(1, 2)),
+        3: UniMonthTuple("Winter end", UQT(1, 3)),
+        4: UniMonthTuple("Spring low", UQT(1, 4)),
+        5: UniMonthTuple("Spring break", UQT(1, 5)),
+        6: UniMonthTuple("Spring height", UQT(2, 1)),
+        7: UniMonthTuple("Spring wane", UQT(2, 2)),
+        8: UniMonthTuple("Spring end", UQT(2, 3)),
+        9: UniMonthTuple("Summer low", UQT(2, 4)),
+        10: UniMonthTuple("Summer break", UQT(2, 5)),
+        11: UniMonthTuple("Summer height", UQT(3, 1)),
+        12: UniMonthTuple("Summer wane", UQT(3, 2)),
+        13: UniMonthTuple("Summer end", UQT(3, 3)),
+        14: UniMonthTuple("Autumn low", UQT(3, 4)),
+        15: UniMonthTuple("Autumn fall", UQT(3, 5)),
+        16: UniMonthTuple("Autumn lull|height", UQT(4, 1)),
+        17: UniMonthTuple("Autumn wane", UQT(4, 2)),
+        18: UniMonthTuple("Autumn end", UQT(4, 3)),
+        19: UniMonthTuple("Winter low", UQT(4, 4)),
+        20: UniMonthTuple("Winter chill", UQT(4, 5)),
+    }
+
+    _austral = {
+        1: UniMonthTuple("Summer height", UQT(1, 1)),
+        2: UniMonthTuple("Summer wane", UQT(1, 2)),
+        3: UniMonthTuple("Summer close", UQT(1, 3)),
+        4: UniMonthTuple("Autumn start", UQT(1, 4)),
+        5: UniMonthTuple("Autumn fall", UQT(1, 5)),
+        6: UniMonthTuple("Autumn lull", UQT(2, 1)),
+        7: UniMonthTuple("Autumn wane", UQT(2, 2)),
+        8: UniMonthTuple("Autumn close", UQT(2, 3)),
+        9: UniMonthTuple("Winter start", UQT(2, 4)),
+        10: UniMonthTuple("Winter chill", UQT(2, 5)),
+        11: UniMonthTuple("Winter lull", UQT(3, 1)),
+        12: UniMonthTuple("Winter wane", UQT(3, 2)),
+        13: UniMonthTuple("Winter close", UQT(3, 3)),
+        14: UniMonthTuple("Spring start", UQT(3, 4)),
+        15: UniMonthTuple("Spring break", UQT(3, 5)),
+        16: UniMonthTuple("Spring run", UQT(4, 1)),
+        17: UniMonthTuple("Spring wane", UQT(4, 2)),
+        18: UniMonthTuple("Spring close", UQT(4, 3)),
+        19: UniMonthTuple("Summer start", UQT(4, 4)),
+        20: UniMonthTuple("Summer break", UQT(4, 5)),
+    }
+
+    _territorian_month_name_long = ChainMap(_territorian, _unified_month_name_long)  # type: ignore
+    _austral_month_name_long = ChainMap(_austral, _unified_month_name_long)  # type: ignore
+    _year_start: Optional[datetime] = None  # datetime object containing first day of date's year
+    unified_date: Optional[UnifiedDateType] = None
+    swt_date: Optional[UnifiedDateType] = None
+    austral_date: Optional[UnifiedDateType] = None
+
     def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
             Initialises default values
@@ -93,122 +208,6 @@ class UnifiedDate:
             # This will validate it is (more or less) correct.
             user_date = datetime.strptime(user_date, '%Y-%m-%d').date().isoformat()
         self.gregorian_date = user_date
-
-        # these three are UnifiedDateType named tuples
-        self.unified_date: Optional[UnifiedDateType] = None
-        self.swt_date: Optional[UnifiedDateType] = None
-        self.austral_date: Optional[UnifiedDateType] = None
-
-        self._year_start: Optional[datetime] = None  # datetime object containing first day of date's year
-        self.festive = [1, 92, 183, 274, 365, 366]
-        self.festive_short = ["Q1", "Q2", "Q3", "Q4", "YE", "LD"]
-
-        # Short-format unified month names. There are no short-format variants for Territorian or Austral.
-        self._unified_month_name_short = {
-            "Q1": UniMonthTuple("Q10", UQT(1, 0)),
-            1: UniMonthTuple("Q1A", UQT(1, 1)),
-            2: UniMonthTuple("Q1B", UQT(1, 2)),
-            3: UniMonthTuple("Q1C", UQT(1, 3)),
-            4: UniMonthTuple("Q1D", UQT(1, 4)),
-            5: UniMonthTuple("Q1E", UQT(1, 5)),
-            "Q2": UniMonthTuple("Q20", UQT(2, 0)),
-            6: UniMonthTuple("Q2A", UQT(2, 1)),
-            7: UniMonthTuple("Q2B", UQT(2, 2)),
-            8: UniMonthTuple("Q2C", UQT(2, 3)),
-            9: UniMonthTuple("Q2D", UQT(2, 4)),
-            10: UniMonthTuple("Q2E", UQT(2, 5)),
-            "Q3": UniMonthTuple("Q30", UQT(3, 0)),
-            11: UniMonthTuple("Q3A", UQT(3, 1)),
-            12: UniMonthTuple("Q3B", UQT(3, 2)),
-            13: UniMonthTuple("Q3C", UQT(3, 3)),
-            14: UniMonthTuple("Q3D", UQT(3, 4)),
-            15: UniMonthTuple("Q three E", UQT(3, 5)),
-            "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
-            16: UniMonthTuple("Q4A", UQT(4, 1)),
-            17: UniMonthTuple("Q4B", UQT(4, 2)),
-            18: UniMonthTuple("Q4C", UQT(4, 3)),
-            19: UniMonthTuple("Q4D", UQT(4, 4)),
-            20: UniMonthTuple("Q4E", UQT(4, 5)),
-            "YE": UniMonthTuple("YE", UQT(5, 0)),
-            "LD": UniMonthTuple("LD", UQT(6, 0)),
-        }
-        self._unified_month_name_long = {
-            "Q1": UniMonthTuple("Quarter one", UQT(1, 0)),
-            1: UniMonthTuple("Quarter one-A", UQT(1, 1)),
-            2: UniMonthTuple("Quarter one-B", UQT(1, 2)),
-            3: UniMonthTuple("Quarter one-C", UQT(1, 3)),
-            4: UniMonthTuple("Quarter one-D", UQT(1, 4)),
-            5: UniMonthTuple("Quarter one-E", UQT(1, 5)),
-            "Q2": UniMonthTuple("Quarter two", UQT(2, 0)),
-            6: UniMonthTuple("Quarter two-A", UQT(2, 1)),
-            7: UniMonthTuple("Quarter two-B", UQT(2, 2)),
-            8: UniMonthTuple("Quarter two-C", UQT(2, 3)),
-            9: UniMonthTuple("Quarter two-D", UQT(2, 4)),
-            10: UniMonthTuple("Quarter two-E", UQT(2, 5)),
-            "Q3": UniMonthTuple("Quarter three", UQT(3, 0)),
-            11: UniMonthTuple("Quarter three-A", UQT(3, 1)),
-            12: UniMonthTuple("Quarter three-B", UQT(3, 2)),
-            13: UniMonthTuple("Quarter three-C", UQT(3, 3)),
-            14: UniMonthTuple("Quarter three-D", UQT(3, 4)),
-            15: UniMonthTuple("Quarter three-E", UQT(3, 5)),
-            "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
-            16: UniMonthTuple("Quarter four-A", UQT(4, 1)),
-            17: UniMonthTuple("Quarter four-B", UQT(4, 2)),
-            18: UniMonthTuple("Quarter four-C", UQT(4, 3)),
-            19: UniMonthTuple("Quarter four-D", UQT(4, 4)),
-            20: UniMonthTuple("Quarter four-E", UQT(4, 5)),
-            "YE": UniMonthTuple("Year end", UQT(5, 0)),
-            "LD": UniMonthTuple("Leap day", UQT(6, 0)),
-        }
-
-        _territorian = {
-            1: UniMonthTuple("Winter freeze", UQT(1, 1)),
-            2: UniMonthTuple("Winter wane", UQT(1, 2)),
-            3: UniMonthTuple("Winter end", UQT(1, 3)),
-            4: UniMonthTuple("Spring low", UQT(1, 4)),
-            5: UniMonthTuple("Spring break", UQT(1, 5)),
-            6: UniMonthTuple("Spring height", UQT(2, 1)),
-            7: UniMonthTuple("Spring wane", UQT(2, 2)),
-            8: UniMonthTuple("Spring end", UQT(2, 3)),
-            9: UniMonthTuple("Summer low", UQT(2, 4)),
-            10: UniMonthTuple("Summer break", UQT(2, 5)),
-            11: UniMonthTuple("Summer height", UQT(3, 1)),
-            12: UniMonthTuple("Summer wane", UQT(3, 2)),
-            13: UniMonthTuple("Summer end", UQT(3, 3)),
-            14: UniMonthTuple("Autumn low", UQT(3, 4)),
-            15: UniMonthTuple("Autumn fall", UQT(3, 5)),
-            16: UniMonthTuple("Autumn lull|height", UQT(4, 1)),
-            17: UniMonthTuple("Autumn wane", UQT(4, 2)),
-            18: UniMonthTuple("Autumn end", UQT(4, 3)),
-            19: UniMonthTuple("Winter low", UQT(4, 4)),
-            20: UniMonthTuple("Winter chill", UQT(4, 5)),
-        }
-        self._territorian_month_name_long = ChainMap(_territorian, self._unified_month_name_long)  # type: ignore
-
-        _austral = {
-            1: UniMonthTuple("Summer height", UQT(1, 1)),
-            2: UniMonthTuple("Summer wane", UQT(1, 2)),
-            3: UniMonthTuple("Summer close", UQT(1, 3)),
-            4: UniMonthTuple("Autumn start", UQT(1, 4)),
-            5: UniMonthTuple("Autumn fall", UQT(1, 5)),
-            6: UniMonthTuple("Autumn lull", UQT(2, 1)),
-            7: UniMonthTuple("Autumn wane", UQT(2, 2)),
-            8: UniMonthTuple("Autumn close", UQT(2, 3)),
-            9: UniMonthTuple("Winter start", UQT(2, 4)),
-            10: UniMonthTuple("Winter chill", UQT(2, 5)),
-            11: UniMonthTuple("Winter lull", UQT(3, 1)),
-            12: UniMonthTuple("Winter wane", UQT(3, 2)),
-            13: UniMonthTuple("Winter close", UQT(3, 3)),
-            14: UniMonthTuple("Spring start", UQT(3, 4)),
-            15: UniMonthTuple("Spring break", UQT(3, 5)),
-            16: UniMonthTuple("Spring run", UQT(4, 1)),
-            17: UniMonthTuple("Spring wane", UQT(4, 2)),
-            18: UniMonthTuple("Spring close", UQT(4, 3)),
-            19: UniMonthTuple("Summer start", UQT(4, 4)),
-            20: UniMonthTuple("Summer break", UQT(4, 5)),
-        }
-        self._austral_month_name_long = ChainMap(_austral, self._unified_month_name_long)  # type: ignore
-
         self.unified_date = self.unify(user_date, style)
 
     def __str__(self) -> str:
