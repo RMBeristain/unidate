@@ -367,17 +367,17 @@ class UnifiedDate:
             # date is a festivity. These months don't have number, only name.
             month_number = self.festive_short[weekday.number]  # use week day number as index
 
-        if style.title() != "Short":
-            # invalid styles are returned as "Long"
-            if variant.title() == "Austral":
-                return self._austral_month_name_long[month_number]
-            elif variant.upper() == "SWT":
-                return self._territorian_month_name_long[month_number]
-            else:
-                # invalid or unknown variants are returned as "Unified"
-                return self._unified_month_name_long[month_number]
-        else:
+        if style.title() == "Short":
+            # Return short style only if explicitely requested, else Long.
             return self._unified_month_name_short[month_number]
+
+        variant = variant.strip()
+        if variant.title() == "Austral":
+            return self._austral_month_name_long[month_number]
+        if variant.upper() == "SWT":
+            return self._territorian_month_name_long[month_number]
+        # invalid or unknown variants are returned as "Unified"
+        return self._unified_month_name_long[month_number]
 
     def unify(self, user_date: str = "Today", style: str = "Long") -> UnifiedDateType:
         """
