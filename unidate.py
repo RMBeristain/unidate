@@ -319,7 +319,7 @@ class UnifiedDate:
             elif 274 < days <= 364:
                 days -= 4
             else:
-                raise InvalidUnifiedDate(f"{days!r} is out of range. Please enter a number between 1 and 366 days.")
+                raise InvalidUnifiedDateValue(f"Day out of range: {days!r}")
 
             if ((days % 90) % 18) % 6 == 0:
                 return UniWeekTuple(1, 6, days)
