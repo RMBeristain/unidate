@@ -49,7 +49,7 @@ class InvalidUnifiedDateValue(ValueError):
     "Not a valid value for UnifiedDate"
 
 
-class UnifiedDate(object):
+class UnifiedDate:
     """
         Transform Gregorian dates to Unified.
 
