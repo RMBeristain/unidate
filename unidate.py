@@ -211,10 +211,7 @@ class UnifiedDate:
         self.unified_date = self.unify(user_date, style)
 
     def __str__(self) -> str:
-        "prnits unified date in a nice format"
-        if not self.unified_date:
-            self.unified_date = self.unify()  # If we have no date to work on assume 'Today'
-
+        "returns unified date in a nice format"
         return (
             f"{'Gregorian:':<15}{self.gregorian_date:>10} - "
             f"{datetime.strptime(self.gregorian_date, '%Y-%m-%d').strftime('%A %d of %B, %Y')}\n"
