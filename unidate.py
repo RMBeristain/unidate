@@ -45,8 +45,8 @@ UQT = namedtuple("UnifiedQuarter", "quarter month")
 UnifiedDateType = namedtuple("UnifiedDateType", "weekday day month year")
 
 
-class InvalidUnifiedDate(Exception):
-    pass
+class InvalidUnifiedDateValue(ValueError):
+    "Not a valid value for UnifiedDate"
 
 
 class UnifiedDate(object):
