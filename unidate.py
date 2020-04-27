@@ -269,36 +269,35 @@ class UnifiedDate:
 
         style = style.strip().title()
 
+        if style == "Iso":  # ISO 8601U "Unified ISO format"
+            return "{year}-{quarter}{month}-{day:02}".format(
+                year=date.year,
+                quarter=date.month.numeric.quarter,
+                month=date.month.numeric.month,
+                day=date.day.number,
+            )
         else:
-            if style == "Iso":  # ISO 8601U "Unified ISO format"
-                return "{year}-{quarter}{month}-{day:02}".format(
-                    year=date.year,
-                    quarter=date.month.numeric.quarter,
-                    month=date.month.numeric.month,
-                    day=date.day.number,
-                )
-            else:
-                if date.weekday.regular:
-                    date = UnifiedDateType(  # replace existing date tuple with requested format
+            if date.weekday.regular:
+                date = UnifiedDateType(  # replace existing date tuple with requested format
+                    weekday=date.weekday,
+                    day=self.get_uniday(
                         weekday=date.weekday,
-                        day=self.get_uniday(
-                            weekday=date.weekday,
-                            # invalid or unknown formats are also displayed as 'Long'
-                            style=style if style in ("Short", "Long") else "Long",
-                        ),
-                        month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
-                        year=date.year,
-                    )
+                        # invalid or unknown formats are also displayed as 'Long'
+                        style=style if style in ("Short", "Long") else "Long",
+                    ),
+                    month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
+                    year=date.year,
+                )
 
-                    if style == "Short":
-                        _day_number = f"{date.day.number}"
-                    else:
-                        _day_number = f"{date.day.number:02}"
-
-                    return f"{date.day.name} {_day_number}, {date.month.name} {date.year}"
+                if style == "Short":
+                    _day_number = f"{date.day.number}"
                 else:
-                    # festive
-                    return "{month} {year}".format(month=date.month.name, year=date.year)
+                    _day_number = f"{date.day.number:02}"
+
+                return f"{date.day.name} {_day_number}, {date.month.name} {date.year}"
+            else:
+                # festive
+                return "{month} {year}".format(month=date.month.name, year=date.year)
 
     def get_uniweek(self, days: int) -> UniWeekTuple:
         """
