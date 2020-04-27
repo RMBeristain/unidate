@@ -321,10 +321,7 @@ class UnifiedDate:
             else:
                 raise InvalidUnifiedDateValue(f"Day out of range: {days!r}")
 
-            if ((days % 90) % 18) % 6 == 0:
-                return UniWeekTuple(1, 6, days)
-            else:
-                return UniWeekTuple(1, ((days % 90) % 18) % 6, days)
+            return UniWeekTuple(1, ((days % 90) % 18) % 6 or 6, days)
 
     def get_uniday(self, weekday: UniWeekTuple, style: str = "Long") -> UniDayTuple:
         """
