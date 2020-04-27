@@ -269,8 +269,6 @@ class UnifiedDate:
         else:
             raise ValueError(f"Unknown variant: {variant}")
 
-        if date is None:
-            return "No date specified"
         else:
             if style == "Iso":  # ISO 8601U "Unified ISO format"
                 return "{year}-{quarter}{month}-{day:02}".format(
