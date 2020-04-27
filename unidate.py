@@ -342,25 +342,11 @@ class UnifiedDate:
             raise UnvalidUnifiedDateValue(f"Invalid week tuple: {weekday!r}")
         if weekday.regular == 0:
             return UniDayTuple(self.festive_short[weekday.number], 0)
-        else:
-            month_day = (weekday.yearday % 90) % 18
-            if month_day == 0:
-                month_day = 18
-
-            if weekday.number in [1, 7, 13]:
-                return UniDayTuple("Firstday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [2, 8, 14]:
-                return UniDayTuple("Seconday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [3, 9, 15]:
-                return UniDayTuple("Thirday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [4, 10, 16]:
-                return UniDayTuple("Fourthday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [5, 11, 17]:
-                return UniDayTuple("Fifthday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [6, 12, 18]:
-                return UniDayTuple("Sixthday" if style == "Long" else f"D{month_day}", month_day)
-            else:
-                raise InvalidUnifiedDate(f"{weekday!r} is an invalid Unified Week Tuple.")
+        if style == 'Long'
+            WEEKDAYS = ["Firstday", "Seconday", "Thirday", "Fourthday", "Fifthday", "Sixthday"]
+            wday_num = weekday.number % 6
+            return UniDayTuple(WEEKDAYS[wday_num], month_day)
+        return UniDayTuple(f"D{month_day}", month_day)
 
     def get_unimonth(self, weekday: UniWeekTuple, variant: str = "Unified", style: str = "Long") -> UniMonthTuple:
         """
