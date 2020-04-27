@@ -38,7 +38,7 @@ from datetime import datetime, timedelta
 from math import trunc
 from typing import Optional
 
-UniWeekTuple = namedtuple("UnifiedWeek", ["regular", "number", "yearday"])
+UniWeekTuple = namedtuple("UnifiedWeek", "regular number yearday")
 UniDayTuple = namedtuple("UnifiedDay", "name number")
 UniMonthTuple = namedtuple("UnifiedMonth", "name numeric")
 UQT = namedtuple("UnifiedQuarter", "quarter month")
