@@ -279,7 +279,7 @@ class UnifiedDate:
                     day=self.get_uniday(
                         weekday=date.weekday,
                         # invalid or unknown formats are also displayed as 'Long'
-                        style=style if style in ("Short", "Long") else "Long",
+                        style="Short" if style == "Short" else "Long",
                     ),
                     month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
                     year=date.year,
