@@ -193,6 +193,11 @@ class UnifiedDate:
     swt_date: Optional[UnifiedDateType] = None
     austral_date: Optional[UnifiedDateType] = None
 
+    @classmethod
+    def today(cls, style="Long"):
+        "Create a UnifiedDate instance from today's date"
+        return cls(datetime.now().date().isoformat(), style)
+
     def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
             Initialises default values
@@ -225,12 +230,6 @@ class UnifiedDate:
 
     def __repr__(self) -> str:
         return self.__str__()
-
-    @classmethod
-    def today(cls, style="Long"):
-        "Create a UnifiedDate instance from today's date"
-        return cls(datetime.now().date().isoformat(), style)
-
 
     def format_date(self, variant: str = "Unified", style: str = "Long") -> str:
         """
