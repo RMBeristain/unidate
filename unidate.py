@@ -78,7 +78,7 @@ class UnifiedDate:
             - year: unified year
     """
 
-    def __init__(self, user_date: str = datetime.strftime(datetime.now(), "%Y-%m-%d"), style: str = "Long") -> None:
+    def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
             Initialises default values
 
@@ -87,7 +87,12 @@ class UnifiedDate:
             - user_date: Gregorian date in ISO 8601 format.
             - style - month representation style. Can be one of 'Long' or 'Short'
         """
-        self.gregorian_date: str = user_date  # str
+        if user_date is None:
+            user_date = datetime.now()
+        else:
+            # This will validate it is (more or less) correct.
+            user_date = datetime.strptime(user_date, '%Y-%m-%d')
+        self.gregorian_date: str = user_date.date().isoformat()  # str
 
         # these three are UnifiedDateType named tuples
         self.unified_date: Optional[UnifiedDateType] = None
