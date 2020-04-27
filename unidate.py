@@ -198,7 +198,7 @@ class UnifiedDate:
         "Create a UnifiedDate instance from today's date"
         return cls(datetime.now().date().isoformat(), style)
 
-    def __init__(self, user_date: str = None, style: str = "Long") -> None:
+    def __init__(self, user_date: str, style: str = "Long") -> None:
         """
             Initialises default values
 
@@ -207,11 +207,8 @@ class UnifiedDate:
             - user_date: Gregorian date in ISO 8601 format.
             - style - month representation style. Can be one of 'Long' or 'Short'
         """
-        if user_date is None:
-            user_date = datetime.now().date().isoformat()
-        else:
-            # This will validate it is (more or less) correct.
-            user_date = datetime.strptime(user_date, '%Y-%m-%d').date().isoformat()
+        # This will validate it is (more or less) correct.
+        user_date = datetime.strptime(user_date, '%Y-%m-%d').date().isoformat()
         self.gregorian_date = user_date
         self.unified_date = self.unify(user_date, style)
 
