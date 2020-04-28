@@ -583,7 +583,7 @@ class UnifiedDate:
 
 
 def startup():
-    today = UnifiedDate(style="Short")
+    today = UnifiedDate.today(style="Short")
     print(f"""{__doc__}\n\nG'day! Today is: {today.format_date(style="Short")}\n\n{today}""")
 
 
