@@ -480,7 +480,6 @@ class UnifiedDate:
             Print gregorian dates corresponding to unified festive dates
             in the year of current Gregorian date.
         """
-        from datetime import timedelta
         from copy import deepcopy
 
         year_start = deepcopy(self._year_start)
