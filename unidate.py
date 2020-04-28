@@ -526,10 +526,10 @@ class UnifiedDate:
             - numeric Gregorian year
         """
         if unified_year is None:
-            raise InvalidUnifiedDate("Please call function with a Unified year (e.g. 7797")
+            raise InvalidUnifiedDateValue("Invalid year value: None")
         else:
             try:
-                int(unified_year)
+                unified_year = int(unified_year)
                 if unified_year >= 0:
                     return unified_year - 5600
                 else:
