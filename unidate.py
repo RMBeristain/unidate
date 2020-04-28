@@ -419,13 +419,11 @@ class UnifiedDate:
             print(msg)
             raise ValueError(msg)
 
+        days = udate.timetuple().tm_yday
+        year = udate.year + 5600
+        uni_weekday = self.get_uniweek(days)
+        uni_day = self.get_uniday(uni_weekday, style=style)
         else:
-            else:
-                days = (udate - self._year_start).days + 1
-                year = udate.year + 5600
-
-                uni_weekday = self.get_uniweek(days)
-                uni_day = self.get_uniday(uni_weekday, style=style)
 
                 try:
                     self.unified_date = UnifiedDateType(
