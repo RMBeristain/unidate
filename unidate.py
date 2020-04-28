@@ -578,7 +578,7 @@ class UnifiedDate:
             _julian = (90 * (_quarter - 1)) + (18 * (_month - 1)) + _day
             _gday = datetime.strptime(f"{_gyear}-{_julian:003}", "%Y-%j") + timedelta(days=_quarter)
 
-        self.unify(_gday.strftime("%Y-%m-%d"))
+        self.unify(_gday.date().isoformat())
         return _gday
 
 
