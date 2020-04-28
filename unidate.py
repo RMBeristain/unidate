@@ -423,30 +423,25 @@ class UnifiedDate:
         year = udate.year + 5600
         uni_weekday = self.get_uniweek(days)
         uni_day = self.get_uniday(uni_weekday, style=style)
-        else:
 
-                try:
-                    self.unified_date = UnifiedDateType(
-                        uni_weekday,
-                        uni_day,
-                        self.get_unimonth(weekday=uni_weekday, variant="Unified", style=style),
-                        year,
-                    )
-                    self.swt_date = UnifiedDateType(
-                        uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="SWT"), year
-                    )
-                    self.austral_date = UnifiedDateType(
-                        uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="Austral"), year
-                    )
-                except Exception as e:
-                    print(
-                        "Error {type}{err}. Values: weekday={weekday}, day={day}".format(
-                            type=type(e), err=str(e), weekday=uni_weekday, day=uni_day
-                        )
-                    )
-                    raise
-                else:
-                    return self.unified_date
+        try:
+            self.unified_date = UnifiedDateType(
+                uni_weekday,
+                uni_day,
+                self.get_unimonth(weekday=uni_weekday, variant="Unified", style=style),
+                year,
+            )
+            self.swt_date = UnifiedDateType(
+                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="SWT"), year
+            )
+            self.austral_date = UnifiedDateType(
+                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="Austral"), year
+            )
+        except Exception as e:
+            print(f"Error {type(e)}:{e}. Values: weekday={uni_weekday}, day={uni_day}")
+            raise
+        else:
+            return self.unified_date
 
     def print_calendar(self) -> None:  # pragma: no cover
         "Print entire year calendar for current Gregorian date"
