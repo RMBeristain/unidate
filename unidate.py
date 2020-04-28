@@ -487,7 +487,7 @@ class UnifiedDate:
         _save_date = self.gregorian_date
 
         for d in self.festive:
-            self.gregorian_date, *_ = (year_start + timedelta(days=d - 1)).isoformat().split("T")
+            self.gregorian_date = (year_start + timedelta(days=d - 1)).date().isoformat()
             self.unify(self.gregorian_date)
             print(f"{'_' * 50}\n{self}")
 
@@ -504,11 +504,7 @@ class UnifiedDate:
         last_day = monthrange(gd.year, gd.month)[1]
 
         for d in range(1, last_day + 1):
-            self.gregorian_date = (
-                datetime.strptime(str(gd.year) + "-" + str(gd.month) + "-" + str(d), "%Y-%m-%d")
-                .isoformat()
-                .split("T")[0]
-            )
+            self.gregorian_date = datetime.strptime(f"{gd.year}-{gd.month:02}-{d:02}", "%Y-%m-%d").date().isoformat()
             self.unify(self.gregorian_date)
             if self.unified_date.month.numeric.month == 0:
                 print(f'{self.gregorian_date}\t{self.format_date("Unified", "Long")}\n{"-" * 40}')
