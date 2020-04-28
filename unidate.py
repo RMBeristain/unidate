@@ -402,8 +402,7 @@ class UnifiedDate:
             - Unified Date as UnifiedDateType {'weekday': UnifiedWeek, 'day': UnifiedDay, 'month': UnifiedMonth, 'year': year}
         """
         if not user_date or user_date.title() == "Today":
-            user_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
-
+            user_date = datetime.now().date().isoformat()
         self.gregorian_date = user_date
 
         try:
