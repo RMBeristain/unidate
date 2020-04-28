@@ -557,8 +557,16 @@ class UnifiedDate:
             _quarter = int(_quarter_month[0])
             _month = int(_quarter_month[1])
             _day = int(_day)
-        except Exception as err:
-            print(f"{err}\nPlease enter Unified Date string in ISO 8601U format (YYYY-QM-DD)")
+        except AttributeError as err:
+            print(f"Expected a string: {err}")
+            raise
+        except IndexError as err:
+            print(f"Quarter or Month seem to be out of range: {user_date}")
+            raise
+        except ValueError as err:
+            print(f"Expected an ISO-8601U (YYYY-QM-DD) date: {user_date}: {err}")
+            raise
+
         else:
             _gyear = self.reverse_year(_year)  # Gregorian year
 
