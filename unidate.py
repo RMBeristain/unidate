@@ -408,9 +408,7 @@ class UnifiedDate:
         try:
             udate = datetime.strptime(user_date, "%Y-%m-%d")
         except ValueError:
-            msg = "Date {0!r} cannot be converted. Date must be given in ISO 8601 format (e.g '1970-01-01')".format(
-                self.gregorian_date
-            )
+            msg = f"Date {user_date!r} must be in ISO-8601 format (YYYY-MM-DD)"
             print(f"Sorry, {msg}")
             raise ValueError(msg)
         else:
