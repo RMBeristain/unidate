@@ -411,13 +411,15 @@ class UnifiedDate:
             msg = f"Date {user_date!r} must be in ISO-8601 format (YYYY-MM-DD)"
             print(f"Sorry, {msg}")
             raise ValueError(msg)
+
+        try:
+            self._year_start = datetime.strptime(f"{udate.year:04}-01-01", "%Y-%m-%d")
+        except ValueError as err:
+            msg = f"Unable to process date {udate!r}: {err}"
+            print(msg)
+            raise ValueError(msg)
+
         else:
-            try:
-                self._year_start = datetime.strptime(f"{udate.year:04}-01-01", "%Y-%m-%d")
-            except ValueError as err:
-                msg = "Unable to handle date {0!r} in this version - {1}".format(user_date, err)
-                print(msg)
-                raise ValueError(msg)
             else:
                 days = (udate - self._year_start).days + 1
                 year = udate.year + 5600
