@@ -342,7 +342,7 @@ class UnifiedDate:
             raise UnvalidUnifiedDateValue(f"Invalid week tuple: {weekday!r}")
         if weekday.regular == 0:
             return UniDayTuple(self.festive_short[weekday.number], 0)
-        if style == 'Long'
+        if style == 'Long':
             WEEKDAYS = ["Firstday", "Seconday", "Thirday", "Fourthday", "Fifthday", "Sixthday"]
             wday_num = weekday.number % 6
             return UniDayTuple(WEEKDAYS[wday_num], month_day)
