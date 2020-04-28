@@ -274,25 +274,25 @@ class UnifiedDate:
 
         if date.weekday.regular:
             date = UnifiedDateType(  # replace existing date tuple with requested format
+                weekday=date.weekday,
+                day=self.get_uniday(
                     weekday=date.weekday,
-                    day=self.get_uniday(
-                        weekday=date.weekday,
-                        # invalid or unknown formats are also displayed as 'Long'
-                        style="Short" if style == "Short" else "Long",
-                    ),
-                    month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
-                    year=date.year,
-                )
+                    # invalid or unknown formats are also displayed as 'Long'
+                    style="Short" if style == "Short" else "Long",
+                ),
+                month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
+                year=date.year,
+            )
 
-                if style == "Short":
-                    _day_number = f"{date.day.number}"
-                else:
-                    _day_number = f"{date.day.number:02}"
-
-                return f"{date.day.name} {_day_number}, {date.month.name} {date.year}"
+            if style == "Short":
+                _day_number = f"{date.day.number}"
             else:
-                # festive
-                return "{month} {year}".format(month=date.month.name, year=date.year)
+                _day_number = f"{date.day.number:02}"
+
+            return f"{date.day.name} {_day_number}, {date.month.name} {date.year}"
+
+        # festive
+        return "{month} {year}".format(month=date.month.name, year=date.year)
 
     def get_uniweek(self, days: int) -> UniWeekTuple:
         """
