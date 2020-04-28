@@ -567,32 +567,31 @@ class UnifiedDate:
             print(f"Expected an ISO-8601U (YYYY-QM-DD) date: {user_date}: {err}")
             raise
 
-        else:
-            _gyear = self.reverse_year(_year)  # Gregorian year
+        _gyear = self.reverse_year(_year)  # Gregorian year
 
-            if _month == 0:
-                if _quarter == 1:
-                    _gday = datetime.strptime(f"{_gyear}-001", "%Y-%j")
-                elif _quarter == 2:
-                    _gday = datetime.strptime(f"{_gyear}-092", "%Y-%j")
-                elif _quarter == 3:
-                    _gday = datetime.strptime(f"{_gyear}-183", "%Y-%j")
-                elif _quarter == 4:
-                    _gday = datetime.strptime(f"{_gyear}-274", "%Y-%j")
-                elif _quarter == 5:
-                    _gday = datetime.strptime(f"{_gyear}-365", "%Y-%j")
-                elif _quarter == 6:
-                    _gday = datetime.strptime(f"{_gyear}-366", "%Y-%j")
-                else:
-                    raise InvalidUnifiedDate(
-                        f"{user_date!r} isn't a valid Unified Date. Please use a date in ISO 8601U format (YYYY-QM-DD)"
-                    )
+        if _month == 0:
+            if _quarter == 1:
+                _gday = datetime.strptime(f"{_gyear}-001", "%Y-%j")
+            elif _quarter == 2:
+                _gday = datetime.strptime(f"{_gyear}-092", "%Y-%j")
+            elif _quarter == 3:
+                _gday = datetime.strptime(f"{_gyear}-183", "%Y-%j")
+            elif _quarter == 4:
+                _gday = datetime.strptime(f"{_gyear}-274", "%Y-%j")
+            elif _quarter == 5:
+                _gday = datetime.strptime(f"{_gyear}-365", "%Y-%j")
+            elif _quarter == 6:
+                _gday = datetime.strptime(f"{_gyear}-366", "%Y-%j")
             else:
-                _julian = (90 * (_quarter - 1)) + (18 * (_month - 1)) + _day
-                _gday = datetime.strptime(f"{_gyear}-{_julian:003}", "%Y-%j") + timedelta(days=_quarter)
+                raise InvalidUnifiedDate(
+                    f"{user_date!r} isn't a valid Unified Date. Please use a date in ISO 8601U format (YYYY-QM-DD)"
+                )
+        else:
+            _julian = (90 * (_quarter - 1)) + (18 * (_month - 1)) + _day
+            _gday = datetime.strptime(f"{_gyear}-{_julian:003}", "%Y-%j") + timedelta(days=_quarter)
 
-            self.unify(_gday.strftime("%Y-%m-%d"))
-            return _gday
+        self.unify(_gday.strftime("%Y-%m-%d"))
+        return _gday
 
 
 def startup():
