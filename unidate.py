@@ -309,19 +309,19 @@ class UnifiedDate:
         """
         if days in self.festive:
             return UniWeekTuple(0, self.festive.index(days), days)
-        else:
-            if 1 < days <= 91:
-                days -= 1
-            elif 92 < days <= 182:
-                days -= 2
-            elif 183 < days <= 273:
-                days -= 3
-            elif 274 < days <= 364:
-                days -= 4
-            else:
-                raise InvalidUnifiedDateValue(f"Day out of range: {days!r}")
 
-            return UniWeekTuple(1, (((days % 90) % 18) % 6) or 6, days)
+        if 1 < days <= 91:
+            days -= 1
+        elif 92 < days <= 182:
+            days -= 2
+        elif 183 < days <= 273:
+            days -= 3
+        elif 274 < days <= 364:
+            days -= 4
+        else:
+            raise InvalidUnifiedDateValue(f"Day out of range: {days!r}")
+
+        return UniWeekTuple(1, (((days % 90) % 18) % 6) or 6, days)
 
     def get_uniday(self, weekday: UniWeekTuple, style: str = "Long") -> UniDayTuple:
         """
