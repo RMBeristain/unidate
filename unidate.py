@@ -570,18 +570,9 @@ class UnifiedDate:
         _gyear = self.reverse_year(_year)  # Gregorian year
 
         if _month == 0:
-            if _quarter == 1:
-                _gday = datetime.strptime(f"{_gyear}-001", "%Y-%j")
-            elif _quarter == 2:
-                _gday = datetime.strptime(f"{_gyear}-092", "%Y-%j")
-            elif _quarter == 3:
-                _gday = datetime.strptime(f"{_gyear}-183", "%Y-%j")
-            elif _quarter == 4:
-                _gday = datetime.strptime(f"{_gyear}-274", "%Y-%j")
-            elif _quarter == 5:
-                _gday = datetime.strptime(f"{_gyear}-365", "%Y-%j")
-            elif _quarter == 6:
-                _gday = datetime.strptime(f"{_gyear}-366", "%Y-%j")
+            DAYNUMS = [None, 1, 92, 183, 274, 365, 366]
+            if 1 <= quarter <= 6:
+                _gday = datetime.strptime(f"{_gyear}-{DAYNUMS[_quarter]:03}", "%Y-%j")
             else:
                 raise InvalidUnifiedDate(
                     f"{user_date!r} isn't a valid Unified Date. Please use a date in ISO 8601U format (YYYY-QM-DD)"
