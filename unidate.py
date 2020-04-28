@@ -536,7 +536,7 @@ class UnifiedDate:
                     print("Sorry, cannot convert Unified prehistoric dates.")
                     return None
             except ValueError:
-                raise InvalidUnifiedDate(f"{unified_year!r} - Not a valid year.")
+                raise InvalidUnifiedDateValue(f"{unified_year!r} - Not a valid year.")
 
     def reverse_unidate(self, u_date: str) -> datetime:
         """
