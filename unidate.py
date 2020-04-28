@@ -571,12 +571,11 @@ class UnifiedDate:
 
         if _month == 0:
             DAYNUMS = [None, 1, 92, 183, 274, 365, 366]
-            if 1 <= _quarter <= 6:
-                _gday = datetime.strptime(f"{_gyear}-{DAYNUMS[_quarter]:03}", "%Y-%j")
-            else:
+            if _quarter < 1 or _quarter > 6:
                 raise InvalidUnifiedDate(
                     f"{user_date!r} isn't a valid Unified Date. Please use a date in ISO 8601U format (YYYY-QM-DD)"
                 )
+            _gday = datetime.strptime(f"{_gyear}-{DAYNUMS[_quarter]:03}", "%Y-%j")
         else:
             _julian = (90 * (_quarter - 1)) + (18 * (_month - 1)) + _day
             _gday = datetime.strptime(f"{_gyear}-{_julian:003}", "%Y-%j") + timedelta(days=_quarter)
