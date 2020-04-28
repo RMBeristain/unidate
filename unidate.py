@@ -580,6 +580,7 @@ class UnifiedDate:
 
 
 def startup():
+    "Display today's date in Unidate standard"
     today = UnifiedDate.today(style="Short")
     print(f"""{__doc__}\n\nG'day! Today is: {today.format_date(style="Short")}\n\n{today}""")
 
