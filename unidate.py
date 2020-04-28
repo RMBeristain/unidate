@@ -571,7 +571,7 @@ class UnifiedDate:
 
         if _month == 0:
             DAYNUMS = [None, 1, 92, 183, 274, 365, 366]
-            if 1 <= quarter <= 6:
+            if 1 <= _quarter <= 6:
                 _gday = datetime.strptime(f"{_gyear}-{DAYNUMS[_quarter]:03}", "%Y-%j")
             else:
                 raise InvalidUnifiedDate(
