@@ -527,16 +527,14 @@ class UnifiedDate:
         """
         if unified_year is None:
             raise InvalidUnifiedDateValue("Invalid year value: None")
-        else:
-            try:
-                unified_year = int(unified_year)
-                if unified_year >= 0:
-                    return unified_year - 5600
-                else:
-                    print("Sorry, cannot convert Unified prehistoric dates.")
-                    return None
-            except ValueError:
-                raise InvalidUnifiedDateValue(f"{unified_year!r} - Not a valid year.")
+        try:
+            unified_year = int(unified_year)
+            if unified_year >= 0:
+                return unified_year - 5600
+            print("Sorry, cannot convert Unified prehistoric dates.")
+        except ValueError:
+            raise InvalidUnifiedDateValue(f"{unified_year!r} - Not a valid year.")
+        return None
 
     def reverse_unidate(self, u_date: str) -> datetime:
         """
