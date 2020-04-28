@@ -452,7 +452,7 @@ class UnifiedDate:
         prev = None
 
         for d in range(0, 366):
-            self.gregorian_date, *_ = (year_start + timedelta(days=d)).isoformat().split("T")
+            self.gregorian_date = (year_start + timedelta(days=d)).date().isoformat()
             self.unify(self.gregorian_date)
             iso = self.format_date("Unified", "ISO")
             uni = self.format_date("Unified")
