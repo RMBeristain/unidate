@@ -15,11 +15,11 @@
     ```
         >>> from unidate import UnifiedDate as UD
 
-        >>> ud = UD()                       # creates instance and initializes to today's date in Unified format.
-        >>> ud.unify('YYYY-MM-DD')          # converts Gregorian ISO date to Unified date.
-        >>> ud.reverse_unidate('YYY-QM-DD') # converts Unified ISO date to Gregorian date.
-        >>> print(ud)                       # displays Gregorian date and various Unified date formats.
-        >>> ud.print_calendar()             # prints this year's Unified calendar
+        >>> ud = UD()                        # creates instance and initializes to today's date in Unified format.
+        >>> ud.unify('YYYY-MM-DD')           # converts Gregorian ISO date to Unified date.
+        >>> ud.reverse_unidate('YYYY-QM-DD') # converts Unified ISO date to Gregorian date.
+        >>> print(ud)                        # displays Gregorian date and various Unified date formats.
+        >>> ud.print_calendar()              # prints this year's Unified calendar
     ```
     For more details see `help(unidate.UnifiedDate)`
 
@@ -80,6 +80,14 @@ class UnifiedDate:
 
     festive = [1, 92, 183, 274, 365, 366]
     festive_short = ["Q1", "Q2", "Q3", "Q4", "YE", "LD"]
+    weekdays = {
+        "Firstday": [1, 7, 13],
+        "Seconday": [2, 8, 14],
+        "Thirday": [3, 9, 15],
+        "Fourthday": [4, 10, 16],
+        "Fifthday": [5, 11, 17],
+        "Sixthday": [6, 12, 18],
+    }
 
     # Short-format unified month names. There are no short-format variants for Territorian or Austral.
     _unified_month_name_short = {
@@ -198,7 +206,7 @@ class UnifiedDate:
         "Create a UnifiedDate instance from today's date"
         return cls(datetime.now().date().isoformat(), style)
 
-    def __init__(self, user_date: str, style: str = "Long") -> None:
+    def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
             Initialises default values
 
@@ -208,7 +216,11 @@ class UnifiedDate:
             - style - month representation style. Can be one of 'Long' or 'Short'
         """
         # This will validate it is (more or less) correct.
-        user_date = datetime.strptime(user_date, '%Y-%m-%d').date().isoformat()
+        user_date = (
+            datetime.strptime(user_date, "%Y-%m-%d").date().isoformat()
+            if user_date
+            else datetime.now().date().isoformat()
+        )
         self.gregorian_date = user_date
         self.unified_date = self.unify(user_date, style)
 
@@ -330,6 +342,8 @@ class UnifiedDate:
             If `style` is specified, return day name in that format. Applies only to regular week days; festive
             day names don't change.
 
+            All weeks always start in a Firstday and end in a Sixtday.
+
             Parameters
             ----------
             - weekday: UniWeekTuple
@@ -337,15 +351,16 @@ class UnifiedDate:
                 - 'Long': Long Day Name (e.g. Seconday)
                 - 'Short': Short Day Name (e.g. D2)
         """
+        if weekday.regular == 0:
+            return UniDayTuple(self.festive_short[weekday.number], 0)
+
         month_day = ((weekday.yearday % 90) % 18) or 18
         if month_day < 1 or month_day > 18:
             raise InvalidUnifiedDateValue(f"Invalid week tuple: {weekday!r}")
-        if weekday.regular == 0:
-            return UniDayTuple(self.festive_short[weekday.number], 0)
-        if style == 'Long':
-            WEEKDAYS = ["Firstday", "Seconday", "Thirday", "Fourthday", "Fifthday", "Sixthday"]
-            wday_num = weekday.number % 6
-            return UniDayTuple(WEEKDAYS[wday_num], month_day)
+
+        if style == "Long":
+            return UniDayTuple("".join(k for k, v in self.weekdays.items() if weekday.number in v), month_day)
+
         return UniDayTuple(f"D{month_day}", month_day)
 
     def get_unimonth(self, weekday: UniWeekTuple, variant: str = "Unified", style: str = "Long") -> UniMonthTuple:
@@ -426,10 +441,7 @@ class UnifiedDate:
 
         try:
             self.unified_date = UnifiedDateType(
-                uni_weekday,
-                uni_day,
-                self.get_unimonth(weekday=uni_weekday, variant="Unified", style=style),
-                year,
+                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="Unified", style=style), year,
             )
             self.swt_date = UnifiedDateType(
                 uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="SWT"), year

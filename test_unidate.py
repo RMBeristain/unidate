@@ -14,7 +14,7 @@ import unidate as ud
 from datetime import datetime
 from pytest import fixture, raises
 from typing import NamedTuple
-from unidate import InvalidUnifiedDate
+from unidate import InvalidUnifiedDateValue
 
 YEAR_OFFSET = 5600  # Unified Calendar sets "Year zero" at the invention of writing, this many years "AD"
 
@@ -50,8 +50,8 @@ def is_leap(year):
 class TestInstance_OK:
     "Everything does what it says on the tin"
 
-    def test_instance_is_callable(self):
-        "Instance is callable directly"
+    def test_Class_is_callable(self):
+        "Class is callable directly"
         assert ud.UnifiedDate()
 
     def test_instance_is_populated(self):
@@ -222,7 +222,7 @@ class TestInstance_Errors:
 
     def test_get_uniweek_raises_exception_with_invalid_days(self, instance):
         for bad_day in (0, 367, 543):
-            with raises(InvalidUnifiedDate):
+            with raises(InvalidUnifiedDateValue):
                 assert instance.get_uniweek(days=bad_day)
 
     def test_format_date_fails_with_unknown_variant(self, instance):
