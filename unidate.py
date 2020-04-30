@@ -242,7 +242,7 @@ class UnifiedDate:
 
     def format_date(self, variant: str = "Unified", style: str = "Long") -> str:
         """
-            Return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
+            Set and return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
 
             NOTE: Non-unified variants don't have a short-format name; they use the same as the Unified variant.
             If style="Short" is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
@@ -278,6 +278,9 @@ class UnifiedDate:
             date = self.austral_date
         else:
             raise ValueError(f"Unknown variant: {variant}")
+
+        if not date:
+            raise InvalidUnifiedDateValue(date)
 
         style = style.strip().title()
 
@@ -394,7 +397,7 @@ class UnifiedDate:
         # invalid or unknown variants are returned as "Unified"
         return self._unified_month_name_long[month_number]
 
-    def unify(self, user_date: str = "Today", style: str = "Long") -> UnifiedDateType:
+    def unify(self, user_date: str = None, style: str = "Long") -> UnifiedDateType:
         """
             Convert user-provided Gregorian date to Unified and Territorian dates.
 
@@ -416,7 +419,7 @@ class UnifiedDate:
             ========
             - Unified Date as UnifiedDateType {'weekday': UnifiedWeek, 'day': UnifiedDay, 'month': UnifiedMonth, 'year': year}
         """
-        if not user_date or user_date.title() == "Today":
+        if not user_date:
             user_date = datetime.now().date().isoformat()
         self.gregorian_date = user_date
 

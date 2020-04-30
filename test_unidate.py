@@ -238,7 +238,9 @@ class TestInstance_Errors:
         instance.austral_date = None
         # Test
         for variant in ("Unified", "SWT", "Austral"):
-            assert instance.format_date(variant) == "No date specified"
+            with raises(InvalidUnifiedDateValue) as err:
+                assert instance.format_date(variant)
+            assert str(err.value) == "None"
 
 
 class TestInstance_Defaults:
