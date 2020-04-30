@@ -106,9 +106,9 @@ class TestInstance_OK:
         assert "Winter chill" in _str
         assert "Summer break" in _str
 
-    def test_accepts_today(self, today):
-        "An instance started with the string 'Today' has correct values in all properties."
-        u = ud.UnifiedDate("Today")
+    def test_today_method(self, today):
+        "An `today` has correct values in all properties."
+        u = ud.UnifiedDate.today()
 
         assert u.gregorian_date == today
         assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
