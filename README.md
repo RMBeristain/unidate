@@ -2,11 +2,11 @@ Unified Calendar
 ================
 
 Module to convert Gregorian calendar dates to Unified calendar dates as featured in the science-fiction novel
-**
+
  A P A R T
  O F T H E
  W O R L D
-**
+
 by R.M. Beristain
 
 DISCLAIMER
