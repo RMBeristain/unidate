@@ -87,15 +87,6 @@ class TestInstance_OK:
         assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
         assert u.unified_date.year == u.swt_date.year == u.austral_date.year
 
-    def test_sysdate_has_correct_values(self, today):
-        "An instance started with system date has correct values in all properties."
-        u = ud.UnifiedDate()
-
-        assert u.gregorian_date == today
-        assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
-        assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
-        assert u.unified_date.year == u.swt_date.year == u.austral_date.year
-
     def test_str_and_repr_have_correct_values(self, fixed_date):
         u = fixed_date
         _str = u.__str__()
@@ -105,15 +96,6 @@ class TestInstance_OK:
         assert "7619-45-18" in _str
         assert "Winter chill" in _str
         assert "Summer break" in _str
-
-    def test_today_method(self, today):
-        "An `today` has correct values in all properties."
-        u = ud.UnifiedDate.today()
-
-        assert u.gregorian_date == today
-        assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
-        assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
-        assert u.unified_date.year == u.swt_date.year == u.austral_date.year
 
     def test_same_Nth_day_always_repeats(self, gregorian_years):
         "The same day number in any year (e.g. the 154th day) always falls on the same Unified date."
@@ -246,12 +228,22 @@ class TestInstance_Errors:
 class TestInstance_Defaults:
     "Default behaviours when certain values aren't provided"
 
-    def test_instance_str_defaults_to_today(self, instance):
-        """`instance.__str__` defaults to "Today's" date if `instance.unified_date` is empty"""
-        # Clear existing date
-        instance.unified_date = None
-        assert instance.__str__() is not None
-
-    def test_instance_call_method_defaults_to_today(self, today):
-        instance = ud.UnifiedDate()
+    def test_instance_has_correct_default_values(self, instance, today):
+        "An instance started with no parameters has correct default of 'Today' in all properties."
         assert instance.gregorian_date == today
+        assert instance.unified_date.weekday == instance.swt_date.weekday == instance.austral_date.weekday
+        assert (
+            instance.unified_date.month.numeric
+            == instance.swt_date.month.numeric
+            == instance.austral_date.month.numeric
+        )
+        assert instance.unified_date.year == instance.swt_date.year == instance.austral_date.year
+
+    def test_today_method(self, today):
+        "An instance started from `today` has correct values in all properties."
+        u = ud.UnifiedDate.today()
+
+        assert u.gregorian_date == today
+        assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
+        assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
+        assert u.unified_date.year == u.swt_date.year == u.austral_date.year
