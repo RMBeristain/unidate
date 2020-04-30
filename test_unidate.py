@@ -226,7 +226,9 @@ class TestInstance_Errors:
                 assert instance.get_uniweek(days=bad_day)
 
     def test_format_date_fails_with_unknown_variant(self, instance):
-        assert instance.format_date(variant="Mistake") == "Unknown variant"
+        with raises(ValueError) as err:
+            assert instance.format_date(variant="Mistake")
+        assert str(err.value) == "Unknown variant: Mistake"
 
     def test_format_date_fails_without_date(self, instance):
         "`format_date` should complain if there's no valid date in the corresponding field for the variant specified."
