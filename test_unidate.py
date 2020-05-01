@@ -11,10 +11,11 @@
 """
 import random
 import unidate as ud
+from copy import deepcopy
 from datetime import datetime
 from pytest import fixture, raises
 from typing import NamedTuple
-from unidate import InvalidUnifiedDate
+from unidate import InvalidUnifiedDateValue
 
 YEAR_OFFSET = 5600  # Unified Calendar sets "Year zero" at the invention of writing, this many years "AD"
 
@@ -50,8 +51,8 @@ def is_leap(year):
 class TestInstance_OK:
     "Everything does what it says on the tin"
 
-    def test_instance_is_callable(self):
-        "Instance is callable directly"
+    def test_Class_is_callable(self):
+        "Class is callable directly"
         assert ud.UnifiedDate()
 
     def test_instance_is_populated(self):
@@ -87,15 +88,6 @@ class TestInstance_OK:
         assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
         assert u.unified_date.year == u.swt_date.year == u.austral_date.year
 
-    def test_sysdate_has_correct_values(self, today):
-        "An instance started with system date has correct values in all properties."
-        u = ud.UnifiedDate()
-
-        assert u.gregorian_date == today
-        assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
-        assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
-        assert u.unified_date.year == u.swt_date.year == u.austral_date.year
-
     def test_str_and_repr_have_correct_values(self, fixed_date):
         u = fixed_date
         _str = u.__str__()
@@ -105,15 +97,6 @@ class TestInstance_OK:
         assert "7619-45-18" in _str
         assert "Winter chill" in _str
         assert "Summer break" in _str
-
-    def test_accepts_today(self, today):
-        "An instance started with the string 'Today' has correct values in all properties."
-        u = ud.UnifiedDate("Today")
-
-        assert u.gregorian_date == today
-        assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
-        assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
-        assert u.unified_date.year == u.swt_date.year == u.austral_date.year
 
     def test_same_Nth_day_always_repeats(self, gregorian_years):
         "The same day number in any year (e.g. the 154th day) always falls on the same Unified date."
@@ -197,10 +180,21 @@ class TestInstance_OK:
                 assert u.unified_date.month.numeric.month == 0
                 assert u.unified_date.year == unified_year
 
-    def test_reverse_unidate_matches(self, gregorian_years):
-        "function `reverse_UnifiedDate` returns correct Gregorian date"
-        from copy import deepcopy
+    def test_reverse_year_works(self, fixed_date, instance, today):
+        "function `reverse_year` returns correct Gregorian year from Unified year"
+        # for known date
+        assert fixed_date.gregorian_date == "2019-12-30"
+        _uy = deepcopy(fixed_date.unified_date.year)
+        _gy = fixed_date.reverse_year(_uy)
+        assert _gy == 2019
+        # for system date
+        _this_year, *_ = today.split("-")
+        _uy = deepcopy(instance.unified_date.year)
+        _gy = instance.reverse_year(_uy)
+        assert _gy == int(_this_year)
 
+    def test_reverse_unidate_matches(self, gregorian_years):
+        "function `reverse_unidate` returns correct Gregorian date"
         for year in gregorian_years:
             _to_uni = ud.UnifiedDate(f"{year}-01-01")
             _range = range(1, 367) if is_leap(year) else range(1, 366)
@@ -222,11 +216,13 @@ class TestInstance_Errors:
 
     def test_get_uniweek_raises_exception_with_invalid_days(self, instance):
         for bad_day in (0, 367, 543):
-            with raises(InvalidUnifiedDate):
+            with raises(InvalidUnifiedDateValue):
                 assert instance.get_uniweek(days=bad_day)
 
     def test_format_date_fails_with_unknown_variant(self, instance):
-        assert instance.format_date(variant="Mistake") == "Unknown variant"
+        with raises(ValueError) as err:
+            assert instance.format_date(variant="Mistake")
+        assert str(err.value) == "Unknown variant: Mistake"
 
     def test_format_date_fails_without_date(self, instance):
         "`format_date` should complain if there's no valid date in the corresponding field for the variant specified."
@@ -236,18 +232,30 @@ class TestInstance_Errors:
         instance.austral_date = None
         # Test
         for variant in ("Unified", "SWT", "Austral"):
-            assert instance.format_date(variant) == "No date specified"
+            with raises(InvalidUnifiedDateValue) as err:
+                assert instance.format_date(variant)
+            assert str(err.value) == "None"
 
 
 class TestInstance_Defaults:
     "Default behaviours when certain values aren't provided"
 
-    def test_instance_str_defaults_to_today(self, instance):
-        """`instance.__str__` defaults to "Today's" date if `instance.unified_date` is empty"""
-        # Clear existing date
-        instance.unified_date = None
-        assert instance.__str__() is not None
-
-    def test_instance_call_method_defaults_to_today(self, today):
-        instance = ud.UnifiedDate()
+    def test_instance_has_correct_default_values(self, instance, today):
+        "An instance started with no parameters has correct default of 'Today' in all properties."
         assert instance.gregorian_date == today
+        assert instance.unified_date.weekday == instance.swt_date.weekday == instance.austral_date.weekday
+        assert (
+            instance.unified_date.month.numeric
+            == instance.swt_date.month.numeric
+            == instance.austral_date.month.numeric
+        )
+        assert instance.unified_date.year == instance.swt_date.year == instance.austral_date.year
+
+    def test_today_method(self, today):
+        "An instance started from `today` has correct values in all properties."
+        u = ud.UnifiedDate.today()
+
+        assert u.gregorian_date == today
+        assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
+        assert u.unified_date.month.numeric == u.swt_date.month.numeric == u.austral_date.month.numeric
+        assert u.unified_date.year == u.swt_date.year == u.austral_date.year

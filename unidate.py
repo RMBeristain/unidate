@@ -15,11 +15,11 @@
     ```
         >>> from unidate import UnifiedDate as UD
 
-        >>> ud = UD()                       # creates instance and initializes to today's date in Unified format.
-        >>> ud.unify('YYYY-MM-DD')          # converts Gregorian ISO date to Unified date.
-        >>> ud.reverse_unidate('YYY-QM-DD') # converts Unified ISO date to Gregorian date.
-        >>> print(ud)                       # displays Gregorian date and various Unified date formats.
-        >>> ud.print_calendar()             # prints this year's Unified calendar
+        >>> ud = UD()                        # creates instance and initializes to today's date in Unified format.
+        >>> ud.unify('YYYY-MM-DD')           # converts Gregorian ISO date to Unified date.
+        >>> ud.reverse_unidate('YYYY-QM-DD') # converts Unified ISO date to Gregorian date.
+        >>> print(ud)                        # displays Gregorian date and various Unified date formats.
+        >>> ud.print_calendar()              # prints this year's Unified calendar
     ```
     For more details see `help(unidate.UnifiedDate)`
 
@@ -38,18 +38,18 @@ from datetime import datetime, timedelta
 from math import trunc
 from typing import Optional
 
-UniWeekTuple = namedtuple("UnifiedWeek", ["regular", "number", "yearday"])
+UniWeekTuple = namedtuple("UnifiedWeek", "regular number yearday")
 UniDayTuple = namedtuple("UnifiedDay", "name number")
 UniMonthTuple = namedtuple("UnifiedMonth", "name numeric")
 UQT = namedtuple("UnifiedQuarter", "quarter month")
 UnifiedDateType = namedtuple("UnifiedDateType", "weekday day month year")
 
 
-class InvalidUnifiedDate(Exception):
-    pass
+class InvalidUnifiedDateValue(ValueError):
+    "Not a valid value for UnifiedDate"
 
 
-class UnifiedDate(object):
+class UnifiedDate:
     """
         Transform Gregorian dates to Unified.
 
@@ -78,7 +78,135 @@ class UnifiedDate(object):
             - year: unified year
     """
 
-    def __init__(self, user_date: str = datetime.strftime(datetime.now(), "%Y-%m-%d"), style: str = "Long") -> None:
+    festive = [1, 92, 183, 274, 365, 366]
+    festive_short = ["Q1", "Q2", "Q3", "Q4", "YE", "LD"]
+    weekdays = {
+        "Firstday": [1, 7, 13],
+        "Seconday": [2, 8, 14],
+        "Thirday": [3, 9, 15],
+        "Fourthday": [4, 10, 16],
+        "Fifthday": [5, 11, 17],
+        "Sixthday": [6, 12, 18],
+    }
+
+    # Short-format unified month names. There are no short-format variants for Territorian or Austral.
+    _unified_month_name_short = {
+        "Q1": UniMonthTuple("Q10", UQT(1, 0)),
+        1: UniMonthTuple("Q1A", UQT(1, 1)),
+        2: UniMonthTuple("Q1B", UQT(1, 2)),
+        3: UniMonthTuple("Q1C", UQT(1, 3)),
+        4: UniMonthTuple("Q1D", UQT(1, 4)),
+        5: UniMonthTuple("Q1E", UQT(1, 5)),
+        "Q2": UniMonthTuple("Q20", UQT(2, 0)),
+        6: UniMonthTuple("Q2A", UQT(2, 1)),
+        7: UniMonthTuple("Q2B", UQT(2, 2)),
+        8: UniMonthTuple("Q2C", UQT(2, 3)),
+        9: UniMonthTuple("Q2D", UQT(2, 4)),
+        10: UniMonthTuple("Q2E", UQT(2, 5)),
+        "Q3": UniMonthTuple("Q30", UQT(3, 0)),
+        11: UniMonthTuple("Q3A", UQT(3, 1)),
+        12: UniMonthTuple("Q3B", UQT(3, 2)),
+        13: UniMonthTuple("Q3C", UQT(3, 3)),
+        14: UniMonthTuple("Q3D", UQT(3, 4)),
+        15: UniMonthTuple("Q three E", UQT(3, 5)),
+        "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
+        16: UniMonthTuple("Q4A", UQT(4, 1)),
+        17: UniMonthTuple("Q4B", UQT(4, 2)),
+        18: UniMonthTuple("Q4C", UQT(4, 3)),
+        19: UniMonthTuple("Q4D", UQT(4, 4)),
+        20: UniMonthTuple("Q4E", UQT(4, 5)),
+        "YE": UniMonthTuple("YE", UQT(5, 0)),
+        "LD": UniMonthTuple("LD", UQT(6, 0)),
+    }
+
+    _unified_month_name_long = {
+        "Q1": UniMonthTuple("Quarter one", UQT(1, 0)),
+        1: UniMonthTuple("Quarter one-A", UQT(1, 1)),
+        2: UniMonthTuple("Quarter one-B", UQT(1, 2)),
+        3: UniMonthTuple("Quarter one-C", UQT(1, 3)),
+        4: UniMonthTuple("Quarter one-D", UQT(1, 4)),
+        5: UniMonthTuple("Quarter one-E", UQT(1, 5)),
+        "Q2": UniMonthTuple("Quarter two", UQT(2, 0)),
+        6: UniMonthTuple("Quarter two-A", UQT(2, 1)),
+        7: UniMonthTuple("Quarter two-B", UQT(2, 2)),
+        8: UniMonthTuple("Quarter two-C", UQT(2, 3)),
+        9: UniMonthTuple("Quarter two-D", UQT(2, 4)),
+        10: UniMonthTuple("Quarter two-E", UQT(2, 5)),
+        "Q3": UniMonthTuple("Quarter three", UQT(3, 0)),
+        11: UniMonthTuple("Quarter three-A", UQT(3, 1)),
+        12: UniMonthTuple("Quarter three-B", UQT(3, 2)),
+        13: UniMonthTuple("Quarter three-C", UQT(3, 3)),
+        14: UniMonthTuple("Quarter three-D", UQT(3, 4)),
+        15: UniMonthTuple("Quarter three-E", UQT(3, 5)),
+        "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
+        16: UniMonthTuple("Quarter four-A", UQT(4, 1)),
+        17: UniMonthTuple("Quarter four-B", UQT(4, 2)),
+        18: UniMonthTuple("Quarter four-C", UQT(4, 3)),
+        19: UniMonthTuple("Quarter four-D", UQT(4, 4)),
+        20: UniMonthTuple("Quarter four-E", UQT(4, 5)),
+        "YE": UniMonthTuple("Year end", UQT(5, 0)),
+        "LD": UniMonthTuple("Leap day", UQT(6, 0)),
+    }
+
+    _territorian = {
+        1: UniMonthTuple("Winter freeze", UQT(1, 1)),
+        2: UniMonthTuple("Winter wane", UQT(1, 2)),
+        3: UniMonthTuple("Winter end", UQT(1, 3)),
+        4: UniMonthTuple("Spring low", UQT(1, 4)),
+        5: UniMonthTuple("Spring break", UQT(1, 5)),
+        6: UniMonthTuple("Spring height", UQT(2, 1)),
+        7: UniMonthTuple("Spring wane", UQT(2, 2)),
+        8: UniMonthTuple("Spring end", UQT(2, 3)),
+        9: UniMonthTuple("Summer low", UQT(2, 4)),
+        10: UniMonthTuple("Summer break", UQT(2, 5)),
+        11: UniMonthTuple("Summer height", UQT(3, 1)),
+        12: UniMonthTuple("Summer wane", UQT(3, 2)),
+        13: UniMonthTuple("Summer end", UQT(3, 3)),
+        14: UniMonthTuple("Autumn low", UQT(3, 4)),
+        15: UniMonthTuple("Autumn fall", UQT(3, 5)),
+        16: UniMonthTuple("Autumn lull|height", UQT(4, 1)),
+        17: UniMonthTuple("Autumn wane", UQT(4, 2)),
+        18: UniMonthTuple("Autumn end", UQT(4, 3)),
+        19: UniMonthTuple("Winter low", UQT(4, 4)),
+        20: UniMonthTuple("Winter chill", UQT(4, 5)),
+    }
+
+    _austral = {
+        1: UniMonthTuple("Summer height", UQT(1, 1)),
+        2: UniMonthTuple("Summer wane", UQT(1, 2)),
+        3: UniMonthTuple("Summer close", UQT(1, 3)),
+        4: UniMonthTuple("Autumn start", UQT(1, 4)),
+        5: UniMonthTuple("Autumn fall", UQT(1, 5)),
+        6: UniMonthTuple("Autumn lull", UQT(2, 1)),
+        7: UniMonthTuple("Autumn wane", UQT(2, 2)),
+        8: UniMonthTuple("Autumn close", UQT(2, 3)),
+        9: UniMonthTuple("Winter start", UQT(2, 4)),
+        10: UniMonthTuple("Winter chill", UQT(2, 5)),
+        11: UniMonthTuple("Winter lull", UQT(3, 1)),
+        12: UniMonthTuple("Winter wane", UQT(3, 2)),
+        13: UniMonthTuple("Winter close", UQT(3, 3)),
+        14: UniMonthTuple("Spring start", UQT(3, 4)),
+        15: UniMonthTuple("Spring break", UQT(3, 5)),
+        16: UniMonthTuple("Spring run", UQT(4, 1)),
+        17: UniMonthTuple("Spring wane", UQT(4, 2)),
+        18: UniMonthTuple("Spring close", UQT(4, 3)),
+        19: UniMonthTuple("Summer start", UQT(4, 4)),
+        20: UniMonthTuple("Summer break", UQT(4, 5)),
+    }
+
+    _territorian_month_name_long = ChainMap(_territorian, _unified_month_name_long)  # type: ignore
+    _austral_month_name_long = ChainMap(_austral, _unified_month_name_long)  # type: ignore
+    _year_start: Optional[datetime] = None  # datetime object containing first day of date's year
+    unified_date: Optional[UnifiedDateType] = None
+    swt_date: Optional[UnifiedDateType] = None
+    austral_date: Optional[UnifiedDateType] = None
+
+    @classmethod
+    def today(cls, style="Long"):
+        "Create a UnifiedDate instance from today's date"
+        return cls(datetime.now().date().isoformat(), style)
+
+    def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
             Initialises default values
 
@@ -87,130 +215,17 @@ class UnifiedDate(object):
             - user_date: Gregorian date in ISO 8601 format.
             - style - month representation style. Can be one of 'Long' or 'Short'
         """
-        self.gregorian_date: str = user_date  # str
-
-        # these three are UnifiedDateType named tuples
-        self.unified_date: Optional[UnifiedDateType] = None
-        self.swt_date: Optional[UnifiedDateType] = None
-        self.austral_date: Optional[UnifiedDateType] = None
-
-        self._year_start: Optional[datetime] = None  # datetime object containing first day of date's year
-        self.festive = [1, 92, 183, 274, 365, 366]
-        self.festive_short = ["Q1", "Q2", "Q3", "Q4", "YE", "LD"]
-
-        # Short-format unified month names. There are no short-format variants for Territorian or Austral.
-        self._unified_month_name_short = {
-            "Q1": UniMonthTuple("Q10", UQT(1, 0)),
-            1: UniMonthTuple("Q1A", UQT(1, 1)),
-            2: UniMonthTuple("Q1B", UQT(1, 2)),
-            3: UniMonthTuple("Q1C", UQT(1, 3)),
-            4: UniMonthTuple("Q1D", UQT(1, 4)),
-            5: UniMonthTuple("Q1E", UQT(1, 5)),
-            "Q2": UniMonthTuple("Q20", UQT(2, 0)),
-            6: UniMonthTuple("Q2A", UQT(2, 1)),
-            7: UniMonthTuple("Q2B", UQT(2, 2)),
-            8: UniMonthTuple("Q2C", UQT(2, 3)),
-            9: UniMonthTuple("Q2D", UQT(2, 4)),
-            10: UniMonthTuple("Q2E", UQT(2, 5)),
-            "Q3": UniMonthTuple("Q30", UQT(3, 0)),
-            11: UniMonthTuple("Q3A", UQT(3, 1)),
-            12: UniMonthTuple("Q3B", UQT(3, 2)),
-            13: UniMonthTuple("Q3C", UQT(3, 3)),
-            14: UniMonthTuple("Q3D", UQT(3, 4)),
-            15: UniMonthTuple("Q three E", UQT(3, 5)),
-            "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
-            16: UniMonthTuple("Q4A", UQT(4, 1)),
-            17: UniMonthTuple("Q4B", UQT(4, 2)),
-            18: UniMonthTuple("Q4C", UQT(4, 3)),
-            19: UniMonthTuple("Q4D", UQT(4, 4)),
-            20: UniMonthTuple("Q4E", UQT(4, 5)),
-            "YE": UniMonthTuple("YE", UQT(5, 0)),
-            "LD": UniMonthTuple("LD", UQT(6, 0)),
-        }
-        self._unified_month_name_long = {
-            "Q1": UniMonthTuple("Quarter one", UQT(1, 0)),
-            1: UniMonthTuple("Quarter one-A", UQT(1, 1)),
-            2: UniMonthTuple("Quarter one-B", UQT(1, 2)),
-            3: UniMonthTuple("Quarter one-C", UQT(1, 3)),
-            4: UniMonthTuple("Quarter one-D", UQT(1, 4)),
-            5: UniMonthTuple("Quarter one-E", UQT(1, 5)),
-            "Q2": UniMonthTuple("Quarter two", UQT(2, 0)),
-            6: UniMonthTuple("Quarter two-A", UQT(2, 1)),
-            7: UniMonthTuple("Quarter two-B", UQT(2, 2)),
-            8: UniMonthTuple("Quarter two-C", UQT(2, 3)),
-            9: UniMonthTuple("Quarter two-D", UQT(2, 4)),
-            10: UniMonthTuple("Quarter two-E", UQT(2, 5)),
-            "Q3": UniMonthTuple("Quarter three", UQT(3, 0)),
-            11: UniMonthTuple("Quarter three-A", UQT(3, 1)),
-            12: UniMonthTuple("Quarter three-B", UQT(3, 2)),
-            13: UniMonthTuple("Quarter three-C", UQT(3, 3)),
-            14: UniMonthTuple("Quarter three-D", UQT(3, 4)),
-            15: UniMonthTuple("Quarter three-E", UQT(3, 5)),
-            "Q4": UniMonthTuple("Quarter four", UQT(4, 0)),
-            16: UniMonthTuple("Quarter four-A", UQT(4, 1)),
-            17: UniMonthTuple("Quarter four-B", UQT(4, 2)),
-            18: UniMonthTuple("Quarter four-C", UQT(4, 3)),
-            19: UniMonthTuple("Quarter four-D", UQT(4, 4)),
-            20: UniMonthTuple("Quarter four-E", UQT(4, 5)),
-            "YE": UniMonthTuple("Year end", UQT(5, 0)),
-            "LD": UniMonthTuple("Leap day", UQT(6, 0)),
-        }
-
-        _territorian = {
-            1: UniMonthTuple("Winter freeze", UQT(1, 1)),
-            2: UniMonthTuple("Winter wane", UQT(1, 2)),
-            3: UniMonthTuple("Winter end", UQT(1, 3)),
-            4: UniMonthTuple("Spring low", UQT(1, 4)),
-            5: UniMonthTuple("Spring break", UQT(1, 5)),
-            6: UniMonthTuple("Spring height", UQT(2, 1)),
-            7: UniMonthTuple("Spring wane", UQT(2, 2)),
-            8: UniMonthTuple("Spring end", UQT(2, 3)),
-            9: UniMonthTuple("Summer low", UQT(2, 4)),
-            10: UniMonthTuple("Summer break", UQT(2, 5)),
-            11: UniMonthTuple("Summer height", UQT(3, 1)),
-            12: UniMonthTuple("Summer wane", UQT(3, 2)),
-            13: UniMonthTuple("Summer end", UQT(3, 3)),
-            14: UniMonthTuple("Autumn low", UQT(3, 4)),
-            15: UniMonthTuple("Autumn fall", UQT(3, 5)),
-            16: UniMonthTuple("Autumn lull|height", UQT(4, 1)),
-            17: UniMonthTuple("Autumn wane", UQT(4, 2)),
-            18: UniMonthTuple("Autumn end", UQT(4, 3)),
-            19: UniMonthTuple("Winter low", UQT(4, 4)),
-            20: UniMonthTuple("Winter chill", UQT(4, 5)),
-        }
-        self._territorian_month_name_long = ChainMap(_territorian, self._unified_month_name_long)  # type: ignore
-
-        _austral = {
-            1: UniMonthTuple("Summer height", UQT(1, 1)),
-            2: UniMonthTuple("Summer wane", UQT(1, 2)),
-            3: UniMonthTuple("Summer close", UQT(1, 3)),
-            4: UniMonthTuple("Autumn start", UQT(1, 4)),
-            5: UniMonthTuple("Autumn fall", UQT(1, 5)),
-            6: UniMonthTuple("Autumn lull", UQT(2, 1)),
-            7: UniMonthTuple("Autumn wane", UQT(2, 2)),
-            8: UniMonthTuple("Autumn close", UQT(2, 3)),
-            9: UniMonthTuple("Winter start", UQT(2, 4)),
-            10: UniMonthTuple("Winter chill", UQT(2, 5)),
-            11: UniMonthTuple("Winter lull", UQT(3, 1)),
-            12: UniMonthTuple("Winter wane", UQT(3, 2)),
-            13: UniMonthTuple("Winter close", UQT(3, 3)),
-            14: UniMonthTuple("Spring start", UQT(3, 4)),
-            15: UniMonthTuple("Spring break", UQT(3, 5)),
-            16: UniMonthTuple("Spring run", UQT(4, 1)),
-            17: UniMonthTuple("Spring wane", UQT(4, 2)),
-            18: UniMonthTuple("Spring close", UQT(4, 3)),
-            19: UniMonthTuple("Summer start", UQT(4, 4)),
-            20: UniMonthTuple("Summer break", UQT(4, 5)),
-        }
-        self._austral_month_name_long = ChainMap(_austral, self._unified_month_name_long)  # type: ignore
-
+        # This will validate it is (more or less) correct.
+        user_date = (
+            datetime.strptime(user_date, "%Y-%m-%d").date().isoformat()
+            if user_date
+            else datetime.now().date().isoformat()
+        )
+        self.gregorian_date = user_date
         self.unified_date = self.unify(user_date, style)
 
     def __str__(self) -> str:
-        "prnits unified date in a nice format"
-        if not self.unified_date:
-            self.unified_date = self.unify()  # If we have no date to work on assume 'Today'
-
+        "returns unified date in a nice format"
         return (
             f"{'Gregorian:':<15}{self.gregorian_date:>10} - "
             f"{datetime.strptime(self.gregorian_date, '%Y-%m-%d').strftime('%A %d of %B, %Y')}\n"
@@ -225,15 +240,9 @@ class UnifiedDate(object):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __call__(self, value: str = None) -> None:  # pragma: no cover
-        "Allows class to be callable"
-        if value is None:
-            value = datetime.strftime(datetime.now(), "%Y-%m-%d")
-        self.__init__(value)  # type: ignore
-
     def format_date(self, variant: str = "Unified", style: str = "Long") -> str:
         """
-            Return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
+            Set and return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
 
             NOTE: Non-unified variants don't have a short-format name; they use the same as the Unified variant.
             If style="Short" is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
@@ -261,8 +270,6 @@ class UnifiedDate(object):
             ========
             - Unified date in specified format.
         """
-        style = style.strip().title()
-
         if variant == "Unified":
             date = self.unified_date
         elif variant == "SWT":
@@ -270,40 +277,37 @@ class UnifiedDate(object):
         elif variant == "Austral":
             date = self.austral_date
         else:
-            return "Unknown variant"
+            raise ValueError(f"Unknown variant: {variant}")
 
-        if date is None:
-            return "No date specified"
-        else:
-            if style == "Iso":  # ISO 8601U "Unified ISO format"
-                return "{year}-{quarter}{month}-{day:02}".format(
-                    year=date.year,
-                    quarter=date.month.numeric.quarter,
-                    month=date.month.numeric.month,
-                    day=date.day.number,
-                )
+        if not date:
+            raise InvalidUnifiedDateValue(date)
+
+        style = style.strip().title()
+
+        if style == "Iso":  # ISO 8601U "Unified ISO format"
+            return f"{date.year}-{date.month.numeric.quarter}{date.month.numeric.month}-{date.day.number:02}"
+
+        if date.weekday.regular:
+            date = UnifiedDateType(  # replace existing date tuple with requested format
+                weekday=date.weekday,
+                day=self.get_uniday(
+                    weekday=date.weekday,
+                    # invalid or unknown formats are also displayed as 'Long'
+                    style="Short" if style == "Short" else "Long",
+                ),
+                month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
+                year=date.year,
+            )
+
+            if style == "Short":
+                _day_number = f"{date.day.number}"
             else:
-                if date.weekday.regular:
-                    date = UnifiedDateType(  # replace existing date tuple with requested format
-                        weekday=date.weekday,
-                        day=self.get_uniday(
-                            weekday=date.weekday,
-                            # invalid or unknown formats are also displayed as 'Long'
-                            style=style if style in ("Short", "Long") else "Long",
-                        ),
-                        month=self.get_unimonth(weekday=date.weekday, variant=variant, style=style),
-                        year=date.year,
-                    )
+                _day_number = f"{date.day.number:02}"
 
-                    if style == "Short":
-                        _day_number = f"{date.day.number}"
-                    else:
-                        _day_number = f"{date.day.number:02}"
+            return f"{date.day.name} {_day_number}, {date.month.name} {date.year}"
 
-                    return f"{date.day.name} {_day_number}, {date.month.name} {date.year}"
-                else:
-                    # festive
-                    return "{month} {year}".format(month=date.month.name, year=date.year)
+        # festive
+        return "{month} {year}".format(month=date.month.name, year=date.year)
 
     def get_uniweek(self, days: int) -> UniWeekTuple:
         """
@@ -320,22 +324,19 @@ class UnifiedDate(object):
         """
         if days in self.festive:
             return UniWeekTuple(0, self.festive.index(days), days)
-        else:
-            if 1 < days <= 91:
-                days -= 1
-            elif 92 < days <= 182:
-                days -= 2
-            elif 183 < days <= 273:
-                days -= 3
-            elif 274 < days <= 364:
-                days -= 4
-            else:
-                raise InvalidUnifiedDate(f"{days!r} is out of range. Please enter a number between 1 and 366 days.")
 
-            if ((days % 90) % 18) % 6 == 0:
-                return UniWeekTuple(1, 6, days)
-            else:
-                return UniWeekTuple(1, ((days % 90) % 18) % 6, days)
+        if 1 < days <= 91:
+            days -= 1
+        elif 92 < days <= 182:
+            days -= 2
+        elif 183 < days <= 273:
+            days -= 3
+        elif 274 < days <= 364:
+            days -= 4
+        else:
+            raise InvalidUnifiedDateValue(f"Day out of range: {days!r}")
+
+        return UniWeekTuple(1, (((days % 90) % 18) % 6) or 6, days)
 
     def get_uniday(self, weekday: UniWeekTuple, style: str = "Long") -> UniDayTuple:
         """
@@ -343,6 +344,8 @@ class UnifiedDate(object):
 
             If `style` is specified, return day name in that format. Applies only to regular week days; festive
             day names don't change.
+
+            All weeks always start in a Firstday and end in a Sixtday.
 
             Parameters
             ----------
@@ -353,25 +356,15 @@ class UnifiedDate(object):
         """
         if weekday.regular == 0:
             return UniDayTuple(self.festive_short[weekday.number], 0)
-        else:
-            month_day = (weekday.yearday % 90) % 18
-            if month_day == 0:
-                month_day = 18
 
-            if weekday.number in [1, 7, 13]:
-                return UniDayTuple("Firstday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [2, 8, 14]:
-                return UniDayTuple("Seconday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [3, 9, 15]:
-                return UniDayTuple("Thirday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [4, 10, 16]:
-                return UniDayTuple("Fourthday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [5, 11, 17]:
-                return UniDayTuple("Fifthday" if style == "Long" else f"D{month_day}", month_day)
-            elif weekday.number in [6, 12, 18]:
-                return UniDayTuple("Sixthday" if style == "Long" else f"D{month_day}", month_day)
-            else:
-                raise InvalidUnifiedDate(f"{weekday!r} is an invalid Unified Week Tuple.")
+        month_day = ((weekday.yearday % 90) % 18) or 18
+        if month_day < 1 or month_day > 18:
+            raise InvalidUnifiedDateValue(f"Invalid week tuple: {weekday!r}")
+
+        if style == "Long":
+            return UniDayTuple("".join(k for k, v in self.weekdays.items() if weekday.number in v), month_day)
+
+        return UniDayTuple(f"D{month_day}", month_day)
 
     def get_unimonth(self, weekday: UniWeekTuple, variant: str = "Unified", style: str = "Long") -> UniMonthTuple:
         """
@@ -392,19 +385,19 @@ class UnifiedDate(object):
             # date is a festivity. These months don't have number, only name.
             month_number = self.festive_short[weekday.number]  # use week day number as index
 
-        if style.title() != "Short":
-            # invalid styles are returned as "Long"
-            if variant.title() == "Austral":
-                return self._austral_month_name_long[month_number]
-            elif variant.upper() == "SWT":
-                return self._territorian_month_name_long[month_number]
-            else:
-                # invalid or unknown variants are returned as "Unified"
-                return self._unified_month_name_long[month_number]
-        else:
+        if style.title() == "Short":
+            # Return short style only if explicitely requested, else Long.
             return self._unified_month_name_short[month_number]
 
-    def unify(self, user_date: str = "Today", style: str = "Long") -> UnifiedDateType:
+        variant = variant.strip()
+        if variant.title() == "Austral":
+            return self._austral_month_name_long[month_number]
+        if variant.upper() == "SWT":
+            return self._territorian_month_name_long[month_number]
+        # invalid or unknown variants are returned as "Unified"
+        return self._unified_month_name_long[month_number]
+
+    def unify(self, user_date: str = None, style: str = "Long") -> UnifiedDateType:
         """
             Convert user-provided Gregorian date to Unified and Territorian dates.
 
@@ -426,55 +419,44 @@ class UnifiedDate(object):
             ========
             - Unified Date as UnifiedDateType {'weekday': UnifiedWeek, 'day': UnifiedDay, 'month': UnifiedMonth, 'year': year}
         """
-        if not user_date or user_date.title() == "Today":
-            user_date = datetime.strftime(datetime.now(), "%Y-%m-%d")
-
+        if not user_date:
+            user_date = datetime.now().date().isoformat()
         self.gregorian_date = user_date
 
         try:
             udate = datetime.strptime(user_date, "%Y-%m-%d")
         except ValueError:
-            msg = "Date {0!r} cannot be converted. Date must be given in ISO 8601 format (e.g '1970-01-01')".format(
-                self.gregorian_date
-            )
+            msg = f"Date {user_date!r} must be in ISO-8601 format (YYYY-MM-DD)"
             print(f"Sorry, {msg}")
             raise ValueError(msg)
+
+        try:
+            self._year_start = datetime.strptime(f"{udate.year:04}-01-01", "%Y-%m-%d")
+        except ValueError as err:
+            msg = f"Unable to process date {udate!r}: {err}"
+            print(msg)
+            raise ValueError(msg)
+
+        days = udate.timetuple().tm_yday
+        year = udate.year + 5600
+        uni_weekday = self.get_uniweek(days)
+        uni_day = self.get_uniday(uni_weekday, style=style)
+
+        try:
+            self.unified_date = UnifiedDateType(
+                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="Unified", style=style), year,
+            )
+            self.swt_date = UnifiedDateType(
+                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="SWT"), year
+            )
+            self.austral_date = UnifiedDateType(
+                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="Austral"), year
+            )
+        except Exception as e:
+            print(f"Error {type(e)}:{e}. Values: weekday={uni_weekday}, day={uni_day}")
+            raise
         else:
-            try:
-                self._year_start = datetime.strptime(f"{udate.year:04}-01-01", "%Y-%m-%d")
-            except ValueError as err:
-                msg = "Unable to handle date {0!r} in this version - {1}".format(user_date, err)
-                print(msg)
-                raise ValueError(msg)
-            else:
-                days = (udate - self._year_start).days + 1
-                year = udate.year + 5600
-
-                uni_weekday = self.get_uniweek(days)
-                uni_day = self.get_uniday(uni_weekday, style=style)
-
-                try:
-                    self.unified_date = UnifiedDateType(
-                        uni_weekday,
-                        uni_day,
-                        self.get_unimonth(weekday=uni_weekday, variant="Unified", style=style),
-                        year,
-                    )
-                    self.swt_date = UnifiedDateType(
-                        uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="SWT"), year
-                    )
-                    self.austral_date = UnifiedDateType(
-                        uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant="Austral"), year
-                    )
-                except Exception as e:
-                    print(
-                        "Error {type}{err}. Values: weekday={weekday}, day={day}".format(
-                            type=type(e), err=str(e), weekday=uni_weekday, day=uni_day
-                        )
-                    )
-                    raise
-                else:
-                    return self.unified_date
+            return self.unified_date
 
     def print_calendar(self) -> None:  # pragma: no cover
         "Print entire year calendar for current Gregorian date"
@@ -485,7 +467,7 @@ class UnifiedDate(object):
         prev = None
 
         for d in range(0, 366):
-            self.gregorian_date, *_ = (year_start + timedelta(days=d)).isoformat().split("T")
+            self.gregorian_date = (year_start + timedelta(days=d)).date().isoformat()
             self.unify(self.gregorian_date)
             iso = self.format_date("Unified", "ISO")
             uni = self.format_date("Unified")
@@ -513,14 +495,13 @@ class UnifiedDate(object):
             Print gregorian dates corresponding to unified festive dates
             in the year of current Gregorian date.
         """
-        from datetime import timedelta
         from copy import deepcopy
 
         year_start = deepcopy(self._year_start)
         _save_date = self.gregorian_date
 
         for d in self.festive:
-            self.gregorian_date, *_ = (year_start + timedelta(days=d - 1)).isoformat().split("T")
+            self.gregorian_date = (year_start + timedelta(days=d - 1)).date().isoformat()
             self.unify(self.gregorian_date)
             print(f"{'_' * 50}\n{self}")
 
@@ -537,11 +518,7 @@ class UnifiedDate(object):
         last_day = monthrange(gd.year, gd.month)[1]
 
         for d in range(1, last_day + 1):
-            self.gregorian_date = (
-                datetime.strptime(str(gd.year) + "-" + str(gd.month) + "-" + str(d), "%Y-%m-%d")
-                .isoformat()
-                .split("T")[0]
-            )
+            self.gregorian_date = datetime.strptime(f"{gd.year}-{gd.month:02}-{d:02}", "%Y-%m-%d").date().isoformat()
             self.unify(self.gregorian_date)
             if self.unified_date.month.numeric.month == 0:
                 print(f'{self.gregorian_date}\t{self.format_date("Unified", "Long")}\n{"-" * 40}')
@@ -552,7 +529,7 @@ class UnifiedDate(object):
 
         self.unify(_save_date)
 
-    def reverse_year(self, unified_year: int) -> Optional[int]:
+    def reverse_year(self, unified_year: int) -> int:
         """
             Parameter
             =========
@@ -563,17 +540,16 @@ class UnifiedDate(object):
             - numeric Gregorian year
         """
         if unified_year is None:
-            raise InvalidUnifiedDate("Please call function with a Unified year (e.g. 7797")
-        else:
-            try:
-                int(unified_year)
-                if unified_year >= 0:
-                    return unified_year - 5600
-                else:
-                    print("Sorry, cannot convert Unified prehistoric dates.")
-                    return None
-            except ValueError:
-                raise InvalidUnifiedDate(f"{unified_year!r} - Not a valid year.")
+            raise InvalidUnifiedDateValue("Invalid year value: None")
+
+        try:
+            unified_year = int(unified_year)
+            if unified_year >= 0:
+                return unified_year - 5600
+            raise InvalidUnifiedDateValue("Cannot convert Unified prehistoric dates.")
+        except ValueError:
+            raise InvalidUnifiedDateValue(f"{unified_year!r} - Not a valid year.")
+        return None
 
     def reverse_unidate(self, u_date: str) -> datetime:
         """
@@ -594,38 +570,34 @@ class UnifiedDate(object):
             _quarter = int(_quarter_month[0])
             _month = int(_quarter_month[1])
             _day = int(_day)
-        except Exception as err:
-            print(f"{err}\nPlease enter Unified Date string in ISO 8601U format (YYYY-QM-DD)")
+        except AttributeError as err:
+            print(f"Expected a string: {err}")
+            raise
+        except IndexError as err:
+            print(f"Quarter or Month seem to be out of range: {user_date}")
+            raise
+        except ValueError as err:
+            print(f"Expected an ISO-8601U (YYYY-QM-DD) date: {user_date}: {err}")
+            raise
+
+        _gyear = self.reverse_year(_year)  # Gregorian year
+
+        if _month == 0:
+            DAYNUMS = [None, 1, 92, 183, 274, 365, 366]
+            if _quarter < 1 or _quarter > 6:
+                raise InvalidUnifiedDateValue(f"Not an ISO-8601U date: {user_date!r}")
+            _gday = datetime.strptime(f"{_gyear}-{DAYNUMS[_quarter]:03}", "%Y-%j")
         else:
-            _gyear = self.reverse_year(_year)  # Gregorian year
+            _julian = (90 * (_quarter - 1)) + (18 * (_month - 1)) + _day
+            _gday = datetime.strptime(f"{_gyear}-{_julian:003}", "%Y-%j") + timedelta(days=_quarter)
 
-            if _month == 0:
-                if _quarter == 1:
-                    _gday = datetime.strptime(f"{_gyear}-001", "%Y-%j")
-                elif _quarter == 2:
-                    _gday = datetime.strptime(f"{_gyear}-092", "%Y-%j")
-                elif _quarter == 3:
-                    _gday = datetime.strptime(f"{_gyear}-183", "%Y-%j")
-                elif _quarter == 4:
-                    _gday = datetime.strptime(f"{_gyear}-274", "%Y-%j")
-                elif _quarter == 5:
-                    _gday = datetime.strptime(f"{_gyear}-365", "%Y-%j")
-                elif _quarter == 6:
-                    _gday = datetime.strptime(f"{_gyear}-366", "%Y-%j")
-                else:
-                    raise InvalidUnifiedDate(
-                        f"{user_date!r} isn't a valid Unified Date. Please use a date in ISO 8601U format (YYYY-QM-DD)"
-                    )
-            else:
-                _julian = (90 * (_quarter - 1)) + (18 * (_month - 1)) + _day
-                _gday = datetime.strptime(f"{_gyear}-{_julian:003}", "%Y-%j") + timedelta(days=_quarter)
-
-            self.unify(_gday.strftime("%Y-%m-%d"))
-            return _gday
+        self.unify(_gday.date().isoformat())
+        return _gday
 
 
 def startup():
-    today = UnifiedDate(style="Short")
+    "Display today's date in Unidate standard"
+    today = UnifiedDate.today(style="Short")
     print(f"""{__doc__}\n\nG'day! Today is: {today.format_date(style="Short")}\n\n{today}""")
 
 

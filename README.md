@@ -23,7 +23,9 @@ loss).
 
 
 ### Info Badges
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/) ![Python application](https://github.com/RMBeristain/unidate/workflows/Python%20application/badge.svg)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+![Python application](https://github.com/RMBeristain/unidate/workflows/Python%20application/badge.svg)
 
 
 The Unified Calendar explained
@@ -35,9 +37,11 @@ Western Gregorian calendar.
 ### Years and years
 
 The Gregorian calendar starts counting from zero at the birth of the founder of Christianity, over two thousand and
-twenty years ago, at the time of this writing. The Unified calendar sets its year zero at the earliest known evidence of
-writting, over 5600 years ago. Therefore, Unified dates look like they are 'far in the future' as compared to Gregorian.
-The year 2020 is the year 7620 in the Unified calendar.
+twenty years ago, at the time of this writing.
+
+The Unified calendar sets its year zero at the earliest known evidence of writting, over 5600 years earlier. Therefore,
+Unified dates look like they are 'far in the future' as compared to Gregorian. The year 2020 is the year 7620 in the
+Unified calendar.
 
 ### Months and quarters
 
@@ -119,14 +123,14 @@ The Gregorian week looks like this:
 
 Of course, you may know them by slightly different names ;)
 
-The unified week has only six days because they are big on regularity and standards in the Unified State. They still
+The Unified week has only six days because in the Unified State they are big on regularity and standards. They still
 keep a 2-day weekend, meaning they have only 4 working days. However, other regions that have adopted the Unified
 calendar didn't necessarily adopt this change too. For instance, in the South-Western Territories they instead kept 5
 working days and only 1 week end day.
 
 The Unified State experienced a strong secular movement around the time they reformed their calendar, so they removed
 all personal and mythological references in order to make it more universally representative of the cultures that formed
-it. So, again, their week day names are quite boring.
+it. For that reason their week day names are quite plain.
 
 The Unified week looks like this:
 
@@ -140,7 +144,7 @@ The Unified week looks like this:
     - Sixthday
 
 As a nice bonus of their emphasis in regularity, in the Unified calendar every date always falls on the same day number
-and week day every year, unlike in the Gregorian calendar where one may have been born on a Sunday, but every year the
+and week day every year; unlike in the Gregorian calendar where one may have been born on a Sunday, but every year the
 date moves around the week. In the Unified State, if we were born on a Fourthday, our birthday will always fall on a
 Fourthday.
 
@@ -151,18 +155,18 @@ To run on python interpreter:
 ```python
     >>> from unidate import UnifiedDate as UD
 
-    >>> ud = UD()                       # creates instance and initializes to today's date in Unified format.
-    >>> ud.unify('YYYY-MM-DD')          # converts Gregorian ISO date to Unified date.
-    >>> ud.reverse_unidate('YYY-QM-DD') # converts Unified ISO date to Gregorian date.
-    >>> print(ud)                       # displays Gregorian date and various Unified date formats.
-    >>> ud.print_calendar()             # prints this year's Unified calendar
+    >>> ud = UD()                        # creates instance and initializes to today's date in Unified format.
+    >>> ud.unify('YYYY-MM-DD')           # converts Gregorian ISO date to Unified date.
+    >>> ud.reverse_unidate('YYYY-QM-DD') # converts Unified ISO date to Gregorian date.
+    >>> print(ud)                        # displays Gregorian date and various Unified date formats.
+    >>> ud.print_calendar()              # prints this year's Unified calendar
 ```
 For more details see `help(unidate.UnifiedDate)`
 
 IMPORTANT
 =========
 
-**Requires Python 3.6+**
+Requires **Python 3.6+**
 
 Main Class properties
 ---------------------
