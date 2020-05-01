@@ -11,6 +11,7 @@
 """
 import random
 import unidate as ud
+from copy import deepcopy
 from datetime import datetime
 from pytest import fixture, raises
 from typing import NamedTuple
@@ -179,10 +180,21 @@ class TestInstance_OK:
                 assert u.unified_date.month.numeric.month == 0
                 assert u.unified_date.year == unified_year
 
-    def test_reverse_unidate_matches(self, gregorian_years):
-        "function `reverse_UnifiedDate` returns correct Gregorian date"
-        from copy import deepcopy
+    def test_reverse_year_works(self, fixed_date, instance, today):
+        "function `reverse_year` returns correct Gregorian year from Unified year"
+        # for known date
+        assert fixed_date.gregorian_date == "2019-12-30"
+        _uy = deepcopy(fixed_date.unified_date.year)
+        _gy = fixed_date.reverse_year(_uy)
+        assert _gy == 2019
+        # for system date
+        _this_year, *_ = today.split("-")
+        _uy = deepcopy(instance.unified_date.year)
+        _gy = instance.reverse_year(_uy)
+        assert _gy == int(_this_year)
 
+    def test_reverse_unidate_matches(self, gregorian_years):
+        "function `reverse_unidate` returns correct Gregorian date"
         for year in gregorian_years:
             _to_uni = ud.UnifiedDate(f"{year}-01-01")
             _range = range(1, 367) if is_leap(year) else range(1, 366)
