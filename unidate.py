@@ -36,26 +36,49 @@ __version__ = "1.0.0"
 from collections import ChainMap, namedtuple
 from datetime import datetime, timedelta
 from math import trunc
-from typing import Optional
+from typing import Optional, NamedTuple
 
-UniWeekTuple = namedtuple("UnifiedWeek", "regular number yearday")
+class UniWeekTuple(NamedTuple):
+    """Abreviated representation of a Unified Week"""
+    regular: int
+    number: int
+    yearday: int
+
 UniWeekTuple.regular.__doc__ = "flag to indicate if date is regular or festive: 0=festive, 1=regular"
 UniWeekTuple.number.__doc__ = "day of the week [1-6]"
 UniWeekTuple.yearday.__doc__ = "day of the year [1-366]"
-#
-UniDayTuple = namedtuple("UnifiedDay", "name number")
+
+class UniDayTuple(NamedTuple):
+    """Abreviated representation of a Unified day"""
+    name: str
+    number: int
+
 UniDayTuple.name.__doc__ = "Unified weekday name"
 UniDayTuple.number.__doc__ = "Unified weekday number"
-#
-UniMonthTuple = namedtuple("UnifiedMonth", "name numeric")
+
+class UniMonthTuple(NamedTuple):
+    """Abreviated representation of a Unified Month"""
+    name: str
+    numeric: NamedTuple
+
 UniMonthTuple.name.__doc__ = "Unified month name"
 UniMonthTuple.numeric.__doc__ = "Unified month descriptor: (quarter #, month #)"
-#
-UQT = namedtuple("UnifiedQuarter", "quarter month")
+
+class UQT(NamedTuple):
+    """Abreviated representation of a Unified quarter"""
+    quarter: int
+    month: int
+
 UQT.quarter.__doc__ = "Unified quarter number"
 UQT.month.__doc__ = "Unified month number"
-#
-UnifiedDateType = namedtuple("UnifiedDateType", "weekday day month year")
+
+class UnifiedDateType(NamedTuple):
+    """Abreviated representation of a Unified date"""
+    weekday : NamedTuple
+    day: NamedTuple
+    month: NamedTuple
+    year: int
+
 UnifiedDateType.weekday.__doc__ = "Unified week descriptor: (regular flag, day of the week, day of the year)"
 UnifiedDateType.day.__doc__ = "Unified day descriptor: (weekday name, weekday number)"
 UnifiedDateType.month.__doc__ = "Unified month descriptor: (month name, numeric descriptor(quarter #, month #), year)"
