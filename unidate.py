@@ -116,15 +116,15 @@ class UnifiedDate:
             - year: unified year
     """
 
-    festive = [1, 92, 183, 274, 365, 366]
-    festive_short = ["Q1", "Q2", "Q3", "Q4", "YE", "LD"]
+    festive = (1, 92, 183, 274, 365, 366)
+    festive_short = ("Q1", "Q2", "Q3", "Q4", "YE", "LD")
     weekdays = {
-        "Firstday": [1, 7, 13],
-        "Seconday": [2, 8, 14],
-        "Thirday": [3, 9, 15],
-        "Fourthday": [4, 10, 16],
-        "Fifthday": [5, 11, 17],
-        "Sixthday": [6, 12, 18],
+        "Firstday": (1, 7, 13),
+        "Seconday": (2, 8, 14),
+        "Thirday": (3, 9, 15),
+        "Fourthday": (4, 10, 16),
+        "Fifthday": (5, 11, 17),
+        "Sixthday": (6, 12, 18),
     }
 
     # Short-format unified month names. There are no short-format variants for Territorian or Austral.
