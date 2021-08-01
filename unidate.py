@@ -338,7 +338,7 @@ class UnifiedDate:
 
             Parameters
             ----------
-            - variant: Variant to use. Variants are defined in `Variant` Enum.
+            - variant: Regional month name variant. Variants are defined in `Variant` Enum.
             - style: Date formatting style to use.
                 - 'Long': "LongDayName day, LongMonthName Year" -- Thirday 3, Quarter two-B 7620
                 - 'Short': "ShortDayName day, ShortMonthName Year" -- D3 3, Q2B 7620
@@ -453,7 +453,7 @@ class UnifiedDate:
             Parameters
             ----------
             - weekday - Unified weekday namedtuple
-            - variant - Regional month name variant. Can be one of 'Unified', 'Austral', or 'SWT'
+            - variant - Regional month name variant. Variants are defined in `Variant` Enum.
             - style - month representation style. Can be one of 'Long' or 'Short'
         """
         if weekday.regular:
