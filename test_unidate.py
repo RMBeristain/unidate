@@ -15,7 +15,7 @@ from copy import deepcopy
 from datetime import datetime
 from pytest import fixture, raises
 from typing import NamedTuple
-from unidate import InvalidUnifiedDateValue
+from unidate import InvalidUnifiedDateValue, Variant
 
 YEAR_OFFSET = 5600  # Unified Calendar sets "Year zero" at the invention of writing, this many years "AD"
 
@@ -217,12 +217,12 @@ class TestInstance_Errors:
     def test_get_uniweek_raises_exception_with_invalid_days(self, instance):
         for bad_day in (0, 367, 543):
             with raises(InvalidUnifiedDateValue):
-                assert instance.get_uniweek(days=bad_day)
+                assert instance.get_uniweek(day=bad_day)
 
     def test_format_date_fails_with_unknown_variant(self, instance):
         with raises(ValueError) as err:
             assert instance.format_date(variant="Mistake")
-        assert str(err.value) == "Unknown variant: Mistake"
+        assert str(err.value) == f"Unknown variant: Mistake. Expected {Variant}"
 
     def test_format_date_fails_without_date(self, instance):
         "`format_date` should complain if there's no valid date in the corresponding field for the variant specified."
