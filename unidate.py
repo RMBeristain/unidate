@@ -91,14 +91,17 @@ class UnifiedDate:
     """
         Transform Gregorian dates to Unified.
 
-        By default we Unify current system date if instantiated without parameters. To convert an arbitrary date,
-        call your instance with an ISO 8601-formatted date string. E.g:
+        By default we Unify the current system date if instantiated without parameters.
+        To convert an arbitrary date, create an instance with an ISO 8601-formatted date string. E.g:
+
         ```
         udate=UnifiedDate('2015-04-20')
         ```
+
         You can also pass an ISO 8601-formatted date to an existing instance by calling the `unify` method.
 
-        `UnifiedDate` can be printed to show Unified format along with Sout-Western Territory and Austral formats.
+        `UnifiedDate` can be printed to show a date's Unified format along with Sout-Western Territory and Austral
+        formats.
 
         Unified Calendar Year Zero starts at Gregorian 5600 BC. This program doesn't convert prehistoric dates.
 
@@ -283,17 +286,18 @@ class UnifiedDate:
             Set and return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
 
             NOTE: Non-unified variants don't have a short-format name; they use the same as the Unified variant.
-            If style="Short" is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
-            **string**, but the actual tuple stored will retain the Long name of the month for those variants. Only the
-            day name is shortened.
+
+            If ``style="Short"`` is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
+            **string**, but the actual tuple stored will retain the Long name of the month. Only the day name is
+            shortened.
             For example:
 
             ```
                 >>> ud.format_date(variant='SWT', style='Short')
-                'D4 4, Q2B 7620'
+                'D4 4, Q2B 7620'  # day name is shortened for SWT and Austral variants.
 
                 >>> ud.swt_date.month.name
-                'Spring wane'
+                'Spring wane'  # month name is always in long-format for all variants.
             ```
 
             Parameters
