@@ -23,9 +23,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # pip install -r requirements.txt  # there are no current requirements
     - name: Test with pytest
       run: |
         # linting is done manually with black at the moment
-        pip install pytest
+        pip install -r requirements-dev.txt
         pytest
