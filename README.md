@@ -11,6 +11,7 @@ by R.M. Beristain
 
 DISCLAIMER
 ----------
+
 This software is distributed 'as is' and with absolutely no warranties of any kind, whether express or implied,
 including but not limited to, any warranty of merchantability or fitness for a particular purpose.
 
@@ -21,20 +22,24 @@ of this software be liable for any damages whatsoever relating to the use, misus
 (including, but not limited to, damages for loss of profits, business interruption, loss of information, or any other
 loss).
 
-
 ### Info Badges
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 ![Python application](https://github.com/RMBeristain/unidate/workflows/Python%20application/badge.svg)
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+![Python application](https://github.com/RMBeristain/unidate/workflows/Python%20application/badge.svg)
 
-The Unified Calendar explained
+The Unified Calendar explained <!--  markdownlint-disable MD025 -->
 ==============================
 
 In the Unified State people have adopted a new calendar that completely does away with the division used by the
 Western Gregorian calendar.
 
-### Years and years
+Years and years
+---------------
 
 The Gregorian calendar starts counting from zero at the birth of the founder of Christianity, over two thousand and
 twenty years ago, at the time of this writing.
@@ -43,7 +48,8 @@ The Unified calendar sets its year zero at the earliest known evidence of writti
 Unified dates look like they are 'far in the future' as compared to Gregorian. The year 2020 is the year 7620 in the
 Unified calendar.
 
-### Months and quarters
+Months and quarters
+-------------------
 
 It's almost certain we'll be familiar with the months of the Gregorian calendar: The year is split in 12 months. Each
 month has between 28 and 31 days in an almost-but-not-quite alternating pattern. Month names are called after antiquity
@@ -52,7 +58,7 @@ deities and Roman Emperors.
 Because 12 is divisible by 4, some people like to divide the year into 4 quarters of 3 months each, which is useful for
 certain administrative tasks.
 
-So the Gregorian calendar months look like this:
+So Gregorian calendar months look like this:
 
 - January, 31 days
 - Febriary, 28|29 days
@@ -67,14 +73,15 @@ So the Gregorian calendar months look like this:
 - November, 30
 - December, 31
 
-The Unified calendar is perfectly regular: The year is split in 20 months. Each month has exactly 18 days. The odd 5 or
-6 days that remain are always festive. Unified month names are rather boringly named with numbers and letters, but
-Territorian and Austral variants have more colourful names for the same divisions.
+In contrast, the Unified calendar is perfectly regular: The year is split in 20 months. Each month has exactly
+18 days. The odd 5 or 6 days that remain are always festive. Unified month names are rather boringly named with numbers
+and letters, but Territorian and Austral variants have more colourful names for the same periods.
 
-In the Unified calendar quarters are integrated; the first 4 of these festive days mark the start of each quarter. The
-fifth festive is always Year End; the sixth one is Leap Day and it is always added at the end of the year when needed.
+Quarters are inbuilt into the Unified calendar; the first 4 of those festive days mentioned earlier mark the start of
+each quarter. The fifth festive is always Year End; the sixth one is Leap Day and it is always added at the end of the
+year when needed.
 
-The Unified Calendar months look like this:
+Unified Calendar months look like this:
 
 - Quarter one, 1 day (festive, marks the start of the quarter)
 - Quarter one-A, 18 days
@@ -152,6 +159,7 @@ Usage
 =====
 
 To run on python interpreter:
+
 ```python
     >>> from unidate import UnifiedDate as UD
 
@@ -161,6 +169,7 @@ To run on python interpreter:
     >>> print(ud)                        # displays Gregorian date and various Unified date formats.
     >>> ud.print_calendar()              # prints this year's Unified calendar
 ```
+
 For more details see `help(unidate.UnifiedDate)`
 
 IMPORTANT
@@ -202,13 +211,11 @@ Main Class properties
 
 - `.austral_date`: A _UnifiedDateType_ named tuple with date in Austral format. Same contents as _unified_date_
 
-
 Main Class methods
 ------------------
 
 Basic usage is very simple, but the class allows you to convert parts of the Gregorian calendar to Unified calendar if
 you so choose.
-
 
 ### unify
 
@@ -250,9 +257,28 @@ There is no function to convert long-format dates at this point, perhaps in a fu
 
 ### print_month
 
-Prints the **Gregorian** month of a given date, and its corresponding Unified dates. I.e., if you have previously
-"unified" a date like 2020-04-23, `print_month` with print the month of April 2020 along with its associated Unified
-dates.
+Prints the **Gregorian** month of a given date, and its corresponding Unified dates.
+
+E.g. if you "unify" a date like 2020-04-23, `print_month` will print the month of April 2020 along with its associated
+Unified dates.
+
+```python
+>>> ud.print_month()
+
+Month for Gregorian date 2020-04-23
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+2020-04-01      Quarter two 7620
+----------------------------------------
+2020-04-02      Firstday 01, Quarter two-A 7620
+2020-04-03      Seconday 02, Quarter two-A 7620
+2020-04-04      Thirday 03, Quarter two-A 7620
+2020-04-05      Fourthday 04, Quarter two-A 7620
+2020-04-06      Fifthday 05, Quarter two-A 7620
+2020-04-07      Sixthday 06, Quarter two-A 7620
+2020-04-08      Firstday 07, Quarter two-A 7620
+2020-04-09      (...etc...)
+```
 
 ### print_calendar
 
@@ -261,8 +287,10 @@ Prints the **Unified** year calendar for the entire year. I.e. if you have previ
 
 ### print_festive
 
-Prints the **Unified** festive days corresponding to a year. I.e. if you have previously "unified" a date like
-2020-04-23, `print_festive` will print the 5 or 6 festive days corresponding to 2020 (6 in this case).
+Prints the **Unified** festive days corresponding to a year.
+
+E.g. if you "unify" a date like 2020-04-23, `print_festive` will print the 5 or 6 festive days corresponding to 2020
+(6 in this case).
 
 ### format_date
 
@@ -280,6 +308,7 @@ Only the tuple corresponding to the format is updated. For instance, if we want 
 ```
 
 Long and Short versions:
+
 ```python
     >>> ud.format_date(style='Long')
     'Fourthday 04, Quarter two-B 7620'
@@ -291,18 +320,33 @@ Long and Short versions:
     UnifiedMonth(name='Quarter two-B', numeric=UnifiedQuarter(quarter=2, month=2))  # this didn't change
 ```
 
-**NOTE:**
-    Non-unified variants don't have a short-format name; they use the same as the Unified variant.
-    If style="Short" is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
-    **string**, but the actual tuple stored will retain the Long name of the month for those variants. Only the
-    day name is shortened.
+**NOTE**: Non-unified variants don't have a short-format name; they use the same name as the Unified variant.
+
+If ``style="Short"`` is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
+**string** name, but the actual tuple stored will retain the Long name of the month. Only the day name is
+shortened.
 
 For example:
 
 ```python
-    >>> ud.format_date(variant='SWT', style='Short')
-    'D4 4, Q2B 7620'
+    >>> ud.format_date(variant=Variant.SWT, style='Short')
+    'D4 4, Q2B 7620'  # returned day name is shortened for SWT and Austral variants.
 
     >>> ud.swt_date.month.name
-    'Spring wane'
+    'Spring wane'  # stored month name is always kept in long-format for all variants.
+```
+
+Regional _variants_ and representation _styles_ are defined in Enumerations `Variant` and `Style` respectively. You can
+pass an Enum or a value to any function that takes those parameters.
+
+In the above example both parameters were given string values. The same call to `format_date` can be made with Enums as:
+
+```python
+    >>> from unidate import Style, Variant
+
+    >>> ud.format_date(Variant.SWT, Style.SHORT)
+    'D4 4, Q2B 7620'
+
+    >>> ud.format_date(variant='SWT', Style.SHORT) # You can mix Enums and values together.
+    'D4 4, Q2B 7620'
 ```
