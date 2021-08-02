@@ -28,6 +28,10 @@ loss).
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 ![Python application](https://github.com/RMBeristain/unidate/workflows/Python%20application/badge.svg)
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+![Python application](https://github.com/RMBeristain/unidate/workflows/Python%20application/badge.svg)
+
 The Unified Calendar explained <!--  markdownlint-disable MD025 -->
 ==============================
 
