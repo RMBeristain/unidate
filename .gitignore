@@ -4,6 +4,9 @@ __pycache__*
 .pytest_cache
 __cache__*
 
+# pyenv
+.python-version
+
 # Sublime
 *sublime-*
 

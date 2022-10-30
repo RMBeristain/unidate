@@ -1,0 +1,15 @@
+name: 'Close stale PRs'
+on: [push]
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - uses: actions/stale@v5
+        with:
+          stale-issue-message: "This Issue is stale because it has been 30 days since last activity. Remove 'stale' label or comment, or it will be closed in 5 days."
+          stale-pr-message: "This Pull Request is stale because it has been 30 days since las activity. Remove 'stale'
+          label or comment, or it will be closed in 5 days."
+          days-before-stale: 30
+          days-before-close: 5
+          operations-per-run: 200
