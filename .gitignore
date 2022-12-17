@@ -1,8 +1,9 @@
 # Python cache
-__pycache__*
-.cache
-.pytest_cache
-__cache__*
+__pycache__/
+.cache/
+pytest_cache/
+__cache__/
+*.pyc
 
 # pyenv
 .python-version
