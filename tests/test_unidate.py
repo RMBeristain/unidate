@@ -10,12 +10,12 @@
     ```
 """
 import random
-from ..unidate import UnifiedDate
+from unidate import UnifiedDate
 from copy import deepcopy
 from datetime import datetime
 from pytest import fixture, raises
 from typing import NamedTuple
-from ..unidate import InvalidUnifiedDateValue, Variant
+from unidate import InvalidUnifiedDateValue, Variant
 
 
 YEAR_OFFSET = 5600  # Unified Calendar sets "Year zero" at the invention of writing, this many years "AD"
