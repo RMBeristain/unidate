@@ -31,13 +31,13 @@
     To view a copy of this license, visit http: //creativecommons.org/licenses/by-sa/3.0/au/
     or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 """
+from __future__ import annotations
+
 __author__ = "R.M. Beristain"
 __version__ = "1.1.1"
 
-from collections import ChainMap
 from datetime import datetime, timedelta
 from math import trunc
-from typing import Optional, NamedTuple, Union
 
 from calendar_data.definitions import UniDay, UniWeek, UniMonth, UQ, UnifiedDateType
 from calendar_data.names import FestiveDate, RegularDate
@@ -89,16 +89,11 @@ class UnifiedDate:
 
     del _regular_date
 
-    _year_start: Optional[datetime] = None  # datetime object containing first day of date's year
-    unified_date: Optional[UnifiedDateType] = None
-    swt_date: Optional[UnifiedDateType] = None
-    austral_date: Optional[UnifiedDateType] = None
-    gregorian_date: Optional[datetime] = None
-
-    @classmethod
-    def today(cls, style="Long"):
-        "Create a UnifiedDate instance from today's date"
-        return cls(datetime.now().date().isoformat(), style)
+    _year_start: datetime | None = None  # datetime object containing first day of date's year
+    unified_date: UnifiedDateType | None = None
+    swt_date: UnifiedDateType | None = None
+    austral_date: UnifiedDateType | None = None
+    gregorian_date: datetime | None = None
 
     def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
@@ -134,7 +129,7 @@ class UnifiedDate:
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __check_variant(self, variant: Union[Variant, str]) -> Union[Variant, str]:
+    def __check_variant(self, variant: Variant | str) -> Variant | str:
         """Check if value given is a valid Unified Calendar `Variant`.
 
         If the value is a `Variant` instance or a known `Variant` value, return the `Variant`. If not, return the
@@ -160,11 +155,10 @@ class UnifiedDate:
 
         return variant
 
-    def __check_style(self, style: Union[Style, str]) -> Union[Style, str]:
+    def __check_style(self, style: Style | str) -> Style | str:
         """Check if value given is a valid Unified `Style` of date representaion.
 
-        If the value is a `Style` instance of a known `Style` value, return `Style`. If not, return the original
-        parameter unchanged.
+        If the value is a known `Style` instance, return the `Style`. If not, return the original parameter unchanged.
 
         Parameters
         ----------
@@ -188,7 +182,7 @@ class UnifiedDate:
 
     def format_date(self, variant: Variant = Variant.UNI, style: Style = Style.LONG) -> str:
         """
-        Set and return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
+        Set and return Unified Date, formatted according to a regional variant (e.g. South-Western Territories).
 
         NOTE: Non-unified variants don't have a short-format name; they use the same name as the Unified variant.
 
@@ -545,6 +539,11 @@ class UnifiedDate:
 
         self.unify(_gday.date().isoformat())
         return _gday
+
+    @classmethod
+    def today(cls, style="Long"):
+        "Create a UnifiedDate instance from today's date"
+        return cls(datetime.now().date().isoformat(), style)
 
 
 def startup():
