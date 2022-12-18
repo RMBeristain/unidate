@@ -39,39 +39,10 @@ from datetime import datetime, timedelta
 from math import trunc
 from typing import Optional, NamedTuple, Union
 
-from .calendar_data import UniWeek
+from .calendar_data.definitions import UniDay, UniWeek, UniMonth, UQ, UnifiedDateType
+from .calendar_data.names import Days
 from .exceptions import InvalidUnifiedDateValue
 from .presentation.styling import Style, Variant
-
-
-class UniDay(NamedTuple):
-    """Abreviated representation of a Unified day"""
-
-    name: str  # Unified weekday name
-    number: int  # Unified weekday number
-
-
-class UniMonth(NamedTuple):
-    """Abreviated representation of a Unified Month"""
-
-    name: str  # Unified month name
-    numeric: NamedTuple  # Unified month descriptor: (quarter #, month #)
-
-
-class UQ(NamedTuple):
-    """Abreviated representation of a Unified quarter"""
-
-    quarter: int  # Unified quarter number
-    month: int  # Unified month number
-
-
-class UnifiedDateType(NamedTuple):
-    """Abreviated representation of a Unified date"""
-
-    weekday: NamedTuple  # Unified week descriptor: (regular flag, day of the week, day of the year)
-    day: NamedTuple  # Unified day descriptor: (weekday name, weekday number)
-    month: NamedTuple  # Unified month descriptor: (month name, numeric descriptor(quarter #, month #), year)
-    year: int  # Unified year
 
 
 class UnifiedDate:
