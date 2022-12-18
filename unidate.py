@@ -33,54 +33,52 @@
 """
 __author__ = "R.M. Beristain"
 __version__ = "1.1.0"
+
 from collections import ChainMap, namedtuple
 from datetime import datetime, timedelta
-from enum import Enum, unique
 from math import trunc
 from typing import Optional, NamedTuple, Union
 
-@unique
-class Variant(Enum):
-    "Unified calendar regional variants"
-    UNI = 'Unified'  # Base Unified State names
-    SWT = 'SWT'  # South-Western Territories names
-    AUS = 'Austral' # Austral hemisphere names
-
-@unique
-class Style(Enum):
-    """Unified calendar representation styles"""
-    LONG = "Long"  # "LongDayName WeekdayNumber, LongMonthName YearNumber" e.g. "Thirday 3, Quarter two-B 7620"
-    SHORT = "Short"  # "ShortDayName WeekdayNumber, ShortMonthName YearNumber" e.g "D3 3, Q2B 7620"
-    ISO = "ISO"  # ISO 8601U "Year-QuarterMonth-day" e.g. 7620-22-03 (Output is the same for all three variants)
+from .presentation.styling import Style, Variant
 
 
 class UniWeekTuple(NamedTuple):
     """Abreviated representation of a Unified Week"""
+
     regular: int  # flag to indicate if date is regular or festive: 0=festive, 1=regular
     number: int  # day of the week [1-6]
     yearday: int  # day of the year [1-366]
 
+
 class UniDayTuple(NamedTuple):
     """Abreviated representation of a Unified day"""
+
     name: str  # Unified weekday name
-    number: int # Unified weekday number
+    number: int  # Unified weekday number
+
 
 class UniMonthTuple(NamedTuple):
     """Abreviated representation of a Unified Month"""
+
     name: str  # Unified month name
     numeric: NamedTuple  # Unified month descriptor: (quarter #, month #)
 
+
 class UQT(NamedTuple):
     """Abreviated representation of a Unified quarter"""
+
     quarter: int  # Unified quarter number
     month: int  # Unified month number
 
+
 class UnifiedDateType(NamedTuple):
     """Abreviated representation of a Unified date"""
-    weekday : NamedTuple  # Unified week descriptor: (regular flag, day of the week, day of the year)
+
+    weekday: NamedTuple  # Unified week descriptor: (regular flag, day of the week, day of the year)
     day: NamedTuple  # Unified day descriptor: (weekday name, weekday number)
     month: NamedTuple  # Unified month descriptor: (month name, numeric descriptor(quarter #, month #), year)
     year: int  # Unified year
+
 
 class InvalidUnifiedDateValue(ValueError):
     "Not a valid value for UnifiedDate"
@@ -88,34 +86,34 @@ class InvalidUnifiedDateValue(ValueError):
 
 class UnifiedDate:
     """
-        Transform Gregorian dates to Unified.
+    Transform Gregorian dates to Unified.
 
-        By default we Unify the current system date if instantiated without parameters.
-        To convert an arbitrary date, create an instance with an ISO 8601-formatted date string. E.g:
+    By default we Unify the current system date if instantiated without parameters.
+    To convert an arbitrary date, create an instance with an ISO 8601-formatted date string. E.g:
 
-        ```
-        udate=UnifiedDate('2015-04-20')
-        ```
+    ```
+    udate=UnifiedDate('2015-04-20')
+    ```
 
-        You can also pass an ISO 8601-formatted date to an existing instance by calling the `unify` method.
+    You can also pass an ISO 8601-formatted date to an existing instance by calling the `unify` method.
 
-        `UnifiedDate` can be printed to show a date's Unified format along with Sout-Western Territory and Austral
-        formats.
+    `UnifiedDate` can be printed to show a date's Unified format along with Sout-Western Territory and Austral
+    formats.
 
-        Unified Calendar Year Zero starts at Gregorian 5600 BC. This program doesn't convert prehistoric dates.
+    Unified Calendar Year Zero starts at Gregorian 5600 BC. This program doesn't convert prehistoric dates.
 
-        Parameters
-        ----------
-        - user_date: ISO 8601-format date string (e.g. '2019-01-01')
+    Parameters
+    ----------
+    - user_date: ISO 8601-format date string (e.g. '2019-01-01')
 
-        Properties
-        ----------
-        - gregorian_date : ISO 8601-format date string (e.g. '2019-01-01')
-        - unified_date: Unified Date named tuple containing the following fields:
-            - UnifiedWeek tuple
-            - UnifiedDay tuple
-            - UnifiedMonth tuple
-            - year: unified year
+    Properties
+    ----------
+    - gregorian_date : ISO 8601-format date string (e.g. '2019-01-01')
+    - unified_date: Unified Date named tuple containing the following fields:
+        - UnifiedWeek tuple
+        - UnifiedDay tuple
+        - UnifiedMonth tuple
+        - year: unified year
     """
 
     FESTIVE_DAYS = (1, 92, 183, 274, 365, 366)
@@ -250,12 +248,12 @@ class UnifiedDate:
 
     def __init__(self, user_date: str = None, style: str = "Long") -> None:
         """
-            Initialises default values
+        Initialises default values
 
-            Parameters
-            ----------
-            - user_date: Gregorian date in ISO 8601 format.
-            - style - month representation style. Can be one of 'Long' or 'Short'
+        Parameters
+        ----------
+        - user_date: Gregorian date in ISO 8601 format.
+        - style - month representation style. Can be one of 'Long' or 'Short'
         """
         # This will validate it is (more or less) correct.
         user_date = (
@@ -336,31 +334,31 @@ class UnifiedDate:
 
     def format_date(self, variant: Variant = Variant.UNI, style: Style = Style.LONG) -> str:
         """
-            Set and return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
+        Set and return Unified Date formatted according to a regional variant (e.g. South-Western Territories).
 
-            NOTE: Non-unified variants don't have a short-format name; they use the same name as the Unified variant.
+        NOTE: Non-unified variants don't have a short-format name; they use the same name as the Unified variant.
 
-            If ``style="Short"`` is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
-            **string**, but the actual tuple stored will retain the Long name of the month. Only the day name is
-            shortened.
-            For example:
+        If ``style="Short"`` is specified for "SWT" or "Austral" variants, `format_date` will return a short-format
+        **string**, but the actual tuple stored will retain the Long name of the month. Only the day name is
+        shortened.
+        For example:
 
-            ```
-                >>> ud.format_date(variant=Variant.SWT, style='Short')
-                'D4 4, Q2B 7620'  # returned day name is shortened for SWT and Austral variants.
+        ```
+            >>> ud.format_date(variant=Variant.SWT, style='Short')
+            'D4 4, Q2B 7620'  # returned day name is shortened for SWT and Austral variants.
 
-                >>> ud.swt_date.month.name
-                'Spring wane'  # stored month name is always kept in long-format for all variants.
-            ```
+            >>> ud.swt_date.month.name
+            'Spring wane'  # stored month name is always kept in long-format for all variants.
+        ```
 
-            Parameters
-            ----------
-            - variant: Regional month name variant. Variants are defined in `Variant` Enum.
-            - style: Calendar representation style. Styles are defined in `Style` Enum.
+        Parameters
+        ----------
+        - variant: Regional month name variant. Variants are defined in `Variant` Enum.
+        - style: Calendar representation style. Styles are defined in `Style` Enum.
 
-            Returns
-            -------
-            - Unified date in specified format.
+        Returns
+        -------
+        - Unified date in specified format.
         """
         variant = self.__check_variant(variant)
         style = self.__check_style(style)
@@ -404,16 +402,16 @@ class UnifiedDate:
 
     def get_uniweek(self, day: int) -> UniWeekTuple:
         """
-            Parameters
-            ==========
-            - day: day number (1..366) of the year.
+        Parameters
+        ==========
+        - day: day number (1..366) of the year.
 
-            Returns:
-            ========
-            - UnifiedWeek namedtuple contaning:
-                - regular - flag to indicate if date is regular or festive: 0=festive, 1=regular
-                - number - numeric value for day of the week [1-6]
-                - yearday - numeric value for day of the year [1-366]
+        Returns:
+        ========
+        - UnifiedWeek namedtuple contaning:
+            - regular - flag to indicate if date is regular or festive: 0=festive, 1=regular
+            - number - numeric value for day of the week [1-6]
+            - yearday - numeric value for day of the year [1-366]
         """
         if day in self.FESTIVE_DAYS:
             return UniWeekTuple(0, self.FESTIVE_DAYS.index(day), day)
@@ -433,17 +431,17 @@ class UnifiedDate:
 
     def get_uniday(self, weekday: UniWeekTuple, style: Style = Style.LONG) -> UniDayTuple:
         """
-            Takes a UniWeekTuple and returns UniDayTuple with (name of the week day, date)
+        Takes a UniWeekTuple and returns UniDayTuple with (name of the week day, date)
 
-            If `style` is specified, return day name in that format. Applies only to regular week days; festive
-            day names don't change.
+        If `style` is specified, return day name in that format. Applies only to regular week days; festive
+        day names don't change.
 
-            All weeks always start in a Firstday and end in a Sixtday.
+        All weeks always start in a Firstday and end in a Sixtday.
 
-            Parameters
-            ----------
-            - weekday: UniWeekTuple
-            - style: Calendar representation style. Styles are defined in `Style` Enum.
+        Parameters
+        ----------
+        - weekday: UniWeekTuple
+        - style: Calendar representation style. Styles are defined in `Style` Enum.
         """
         if weekday.regular == 0:
             return UniDayTuple(self.FESTIVE_NAMES_SHORT[weekday.number], 0)
@@ -461,16 +459,16 @@ class UnifiedDate:
         self, weekday: UniWeekTuple, variant: Variant = Variant.UNI, style: Style = Style.LONG
     ) -> UniMonthTuple:
         """
-            Take a unified weekday, return unified month.
+        Take a unified weekday, return unified month.
 
-            Parameters
-            ----------
-            - weekday:
-                Unified weekday namedtuple
-            - variant:
-                Regional month name variant. Variants are defined in `Variant` Enum.
-            - style:
-                Calendar representation style. Styles are defined in `Style` Enum.
+        Parameters
+        ----------
+        - weekday:
+            Unified weekday namedtuple
+        - variant:
+            Regional month name variant. Variants are defined in `Variant` Enum.
+        - style:
+            Calendar representation style. Styles are defined in `Style` Enum.
         """
         if weekday.regular:
             # date is a regular day
@@ -496,27 +494,27 @@ class UnifiedDate:
 
     def unify(self, user_date: str = None, style: Style = Style.LONG) -> UnifiedDateType:
         """
-            Convert user-provided Gregorian date to Unified and Territorian dates.
+        Convert user-provided Gregorian date to Unified and Territorian dates.
 
-            Takes a gregorian date string and returns a UnifiedDateType tuple containing:
-            unified weekday tuple, unified day name tuple, unified month.
+        Takes a gregorian date string and returns a UnifiedDateType tuple containing:
+        unified weekday tuple, unified day name tuple, unified month.
 
-            Also populates SWT and Austral dates, but those aren't returned.
+        Also populates SWT and Austral dates, but those aren't returned.
 
-            NOTE: Only dates between 1AD and 9999AD in _Gregorian_ Calendar can be converted (but Julian dates
-            aren't supported)
+        NOTE: Only dates between 1AD and 9999AD in _Gregorian_ Calendar can be converted (but Julian dates
+        aren't supported)
 
-            Parameters
-            ----------
-            - user_date:
-                ISO 8601-formatted Gregorian date (e.g. '2020-12-31'). Optionally accepts the sting 'Today' for
-                current sytem date. If no value (None) is provided, defaults to 'Today'
-            - style:
-                Calendar representation style. Styles are defined in `Style` Enum.
+        Parameters
+        ----------
+        - user_date:
+            ISO 8601-formatted Gregorian date (e.g. '2020-12-31'). Optionally accepts the sting 'Today' for
+            current sytem date. If no value (None) is provided, defaults to 'Today'
+        - style:
+            Calendar representation style. Styles are defined in `Style` Enum.
 
-            Returns
-            -------
-            - Unified Date as UnifiedDateType {'weekday': UnifiedWeek, 'day': UnifiedDay, 'month': UnifiedMonth, 'year': year}
+        Returns
+        -------
+        - Unified Date as UnifiedDateType {'weekday': UnifiedWeek, 'day': UnifiedDay, 'month': UnifiedMonth, 'year': year}
         """
         if not user_date:
             user_date = datetime.now().date().isoformat()
@@ -543,7 +541,10 @@ class UnifiedDate:
 
         try:
             self.unified_date = UnifiedDateType(
-                uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant=Variant.UNI, style=style), year,
+                uni_weekday,
+                uni_day,
+                self.get_unimonth(weekday=uni_weekday, variant=Variant.UNI, style=style),
+                year,
             )
             self.swt_date = UnifiedDateType(
                 uni_weekday, uni_day, self.get_unimonth(weekday=uni_weekday, variant=Variant.SWT), year
@@ -591,8 +592,8 @@ class UnifiedDate:
 
     def print_festive(self) -> None:  # pragma: no cover
         """
-            Print gregorian dates corresponding to unified festive dates
-            in the year of current Gregorian date.
+        Print gregorian dates corresponding to unified festive dates
+        in the year of current Gregorian date.
         """
         from copy import deepcopy
 
@@ -630,13 +631,13 @@ class UnifiedDate:
 
     def reverse_year(self, unified_year: int) -> int:
         """
-            Parameter
-            ---------
-            - unified_year: numeric Unified year
+        Parameter
+        ---------
+        - unified_year: numeric Unified year
 
-            Returns
-            -------
-            - numeric Gregorian year
+        Returns
+        -------
+        - numeric Gregorian year
         """
         if unified_year is None:
             raise InvalidUnifiedDateValue("Invalid year value: None")
@@ -652,15 +653,15 @@ class UnifiedDate:
 
     def reverse_unidate(self, u_date: str) -> datetime:
         """
-            Convert Unified date string to Gregorian date.
+        Convert Unified date string to Gregorian date.
 
-            Parameters
-            ==========
-            - unified_date: ISO 8601U-formatted Unified Date string.
+        Parameters
+        ==========
+        - unified_date: ISO 8601U-formatted Unified Date string.
 
-            Returns:
-            ========
-            - datetime object.
+        Returns:
+        ========
+        - datetime object.
         """
         user_date = u_date
         try:

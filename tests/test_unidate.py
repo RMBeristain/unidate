@@ -2,7 +2,7 @@
     Unit tests to verify correct functionality of unidate.py
     ========================================================
 
-    Requires pytest and python3.6+
+    Requires pytest and python3.8+
 
     To run from command line (bash shown. Windows left as an exersise for the reader):
     ```
@@ -10,12 +10,12 @@
     ```
 """
 import random
-import unidate as ud
+from ..unidate import UnifiedDate
 from copy import deepcopy
 from datetime import datetime
 from pytest import fixture, raises
 from typing import NamedTuple
-from unidate import InvalidUnifiedDateValue, Variant
+from ..unidate import InvalidUnifiedDateValue, Variant
 
 
 YEAR_OFFSET = 5600  # Unified Calendar sets "Year zero" at the invention of writing, this many years "AD"
@@ -24,7 +24,7 @@ YEAR_OFFSET = 5600  # Unified Calendar sets "Year zero" at the invention of writ
 @fixture
 def fixed_date():
     "Set up instance with know fixed date 2019-12-30"
-    return ud.UnifiedDate("2019-12-30")
+    return UnifiedDate("2019-12-30")
 
 
 @fixture
@@ -41,7 +41,7 @@ def gregorian_years():
 
 @fixture
 def instance():
-    return ud.UnifiedDate()
+    return UnifiedDate()
 
 
 def is_leap(year):
@@ -54,14 +54,14 @@ class TestInstance_OK:
 
     def test_Class_is_callable(self):
         "Class is callable directly"
-        assert ud.UnifiedDate()
+        assert UnifiedDate()
 
     def test_instance_is_populated(self):
         "An instance has all the date fields we expect, and those fields have values."
-        u = ud.UnifiedDate()
+        u = UnifiedDate()
         date_fields = (u.unified_date, u.swt_date, u.austral_date)
 
-        assert isinstance(u, ud.UnifiedDate)
+        assert isinstance(u, UnifiedDate)
         assert isinstance(u.__str__(), str)
 
         # all date properties must have a value
@@ -101,7 +101,7 @@ class TestInstance_OK:
 
     def test_same_Nth_day_always_repeats(self, gregorian_years):
         "The same day number in any year (e.g. the 154th day) always falls on the same Unified date."
-        u = ud.UnifiedDate()
+        u = UnifiedDate()
         days_of_year = range(1, 366)
         _number_of_years = len(gregorian_years)
 
@@ -131,7 +131,7 @@ class TestInstance_OK:
 
     def test_leap_years(self):
         "Leap years are handled correctly."
-        u = ud.UnifiedDate()
+        u = UnifiedDate()
 
         LEAP = ()
         while len(LEAP) <= 10:
@@ -197,7 +197,7 @@ class TestInstance_OK:
     def test_reverse_unidate_matches(self, gregorian_years):
         "function `reverse_unidate` returns correct Gregorian date"
         for year in gregorian_years:
-            _to_uni = ud.UnifiedDate(f"{year}-01-01")
+            _to_uni = UnifiedDate(f"{year}-01-01")
             _range = range(1, 367) if is_leap(year) else range(1, 366)
 
             for day in _range:
@@ -213,7 +213,7 @@ class TestInstance_Errors:
 
     def test_instance_raises_exception_with_invalid_date(self):
         with raises(ValueError):
-            assert ud.UnifiedDate("not a date")
+            assert UnifiedDate("not a date")
 
     def test_get_uniweek_raises_exception_with_invalid_days(self, instance):
         for bad_day in (0, 367, 543):
@@ -254,7 +254,7 @@ class TestInstance_Defaults:
 
     def test_today_method(self, today):
         "An instance started from `today` has correct values in all properties."
-        u = ud.UnifiedDate.today()
+        u = UnifiedDate.today()
 
         assert u.gregorian_date == today
         assert u.unified_date.weekday == u.swt_date.weekday == u.austral_date.weekday
