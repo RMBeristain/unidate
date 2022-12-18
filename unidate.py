@@ -40,7 +40,7 @@ from math import trunc
 from typing import Optional, NamedTuple, Union
 
 from .calendar_data.definitions import UniDay, UniWeek, UniMonth, UQ, UnifiedDateType
-from .calendar_data.names import Days
+from .calendar_data.names import FestiveDate
 from .exceptions import InvalidUnifiedDateValue
 from .presentation.styling import Style, Variant
 
@@ -77,8 +77,6 @@ class UnifiedDate:
         - year: unified year
     """
 
-    FESTIVE_DAYS = (1, 92, 183, 274, 365, 366)
-    FESTIVE_NAMES_SHORT = ("Q1", "Q2", "Q3", "Q4", "YE", "LD")
     WEEKDAYS = {
         "Firstday": (1, 7, 13),
         "Seconday": (2, 8, 14),
@@ -374,8 +372,8 @@ class UnifiedDate:
             - number - numeric value for day of the week [1-6]
             - yearday - numeric value for day of the year [1-366]
         """
-        if day in self.FESTIVE_DAYS:
-            return UniWeek(0, self.FESTIVE_DAYS.index(day), day)
+        if day in FestiveDate.DAY:
+            return UniWeek(0, FestiveDate.DAY.index(day), day)
 
         if 1 < day <= 91:
             day -= 1
@@ -405,7 +403,7 @@ class UnifiedDate:
         - style: Calendar representation style. Styles are defined in `Style` Enum.
         """
         if weekday.regular == 0:
-            return UniDay(self.FESTIVE_NAMES_SHORT[weekday.number], 0)
+            return UniDay(FestiveDate.SHORT_NAME[weekday.number], 0)
 
         month_day = ((weekday.yearday % 90) % 18) or 18
         if month_day < 1 or month_day > 18:
@@ -436,7 +434,7 @@ class UnifiedDate:
                 month_number = 20
         else:
             # date is a festivity. These months don't have number, only name.
-            month_number = self.FESTIVE_NAMES_SHORT[weekday.number]  # use week day number as index
+            month_number = FestiveDate.SHORT_NAME[weekday.number]  # use week day number as index
 
         if self.__check_style(style) == Style.SHORT:
             # Return short style only if explicitely requested, else Long.
