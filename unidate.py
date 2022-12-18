@@ -503,7 +503,7 @@ class UnifiedDate:
 
         Parameters
         ==========
-        - unified_date: ISO 8601U-formatted Unified Date string.
+        - u_date: ISO 8601U-formatted Unified Date string.
 
         Returns:
         ========
