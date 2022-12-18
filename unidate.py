@@ -32,22 +32,16 @@
     or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 """
 __author__ = "R.M. Beristain"
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
-from collections import ChainMap, namedtuple
+from collections import ChainMap
 from datetime import datetime, timedelta
 from math import trunc
 from typing import Optional, NamedTuple, Union
 
+from .calendar_data import UniWeek
+from .exceptions import InvalidUnifiedDateValue
 from .presentation.styling import Style, Variant
-
-
-class UniWeekTuple(NamedTuple):
-    """Abreviated representation of a Unified Week"""
-
-    regular: int  # flag to indicate if date is regular or festive: 0=festive, 1=regular
-    number: int  # day of the week [1-6]
-    yearday: int  # day of the year [1-366]
 
 
 class UniDayTuple(NamedTuple):
@@ -78,10 +72,6 @@ class UnifiedDateType(NamedTuple):
     day: NamedTuple  # Unified day descriptor: (weekday name, weekday number)
     month: NamedTuple  # Unified month descriptor: (month name, numeric descriptor(quarter #, month #), year)
     year: int  # Unified year
-
-
-class InvalidUnifiedDateValue(ValueError):
-    "Not a valid value for UnifiedDate"
 
 
 class UnifiedDate:
@@ -400,7 +390,7 @@ class UnifiedDate:
         # festive
         return "{month} {year}".format(month=date.month.name, year=date.year)
 
-    def get_uniweek(self, day: int) -> UniWeekTuple:
+    def get_uniweek(self, day: int) -> UniWeek:
         """
         Parameters
         ==========
@@ -414,7 +404,7 @@ class UnifiedDate:
             - yearday - numeric value for day of the year [1-366]
         """
         if day in self.FESTIVE_DAYS:
-            return UniWeekTuple(0, self.FESTIVE_DAYS.index(day), day)
+            return UniWeek(0, self.FESTIVE_DAYS.index(day), day)
 
         if 1 < day <= 91:
             day -= 1
@@ -427,11 +417,11 @@ class UnifiedDate:
         else:
             raise InvalidUnifiedDateValue(f"Day out of range: {day!r}")
 
-        return UniWeekTuple(1, (((day % 90) % 18) % 6) or 6, day)
+        return UniWeek(1, (((day % 90) % 18) % 6) or 6, day)
 
-    def get_uniday(self, weekday: UniWeekTuple, style: Style = Style.LONG) -> UniDayTuple:
+    def get_uniday(self, weekday: UniWeek, style: Style = Style.LONG) -> UniDayTuple:
         """
-        Takes a UniWeekTuple and returns UniDayTuple with (name of the week day, date)
+        Takes a UniWeek and returns UniDayTuple with (name of the week day, date)
 
         If `style` is specified, return day name in that format. Applies only to regular week days; festive
         day names don't change.
@@ -440,7 +430,7 @@ class UnifiedDate:
 
         Parameters
         ----------
-        - weekday: UniWeekTuple
+        - weekday: UniWeek
         - style: Calendar representation style. Styles are defined in `Style` Enum.
         """
         if weekday.regular == 0:
@@ -456,7 +446,7 @@ class UnifiedDate:
         return UniDayTuple(f"D{month_day}", month_day)
 
     def get_unimonth(
-        self, weekday: UniWeekTuple, variant: Variant = Variant.UNI, style: Style = Style.LONG
+        self, weekday: UniWeek, variant: Variant = Variant.UNI, style: Style = Style.LONG
     ) -> UniMonthTuple:
         """
         Take a unified weekday, return unified month.
