@@ -1,6 +1,8 @@
 """
 Unified Day and Month names
 """
+from __future__ import annotations
+
 from collections import ChainMap
 from dataclasses import dataclass, field
 
